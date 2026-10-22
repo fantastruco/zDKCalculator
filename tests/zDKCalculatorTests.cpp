@@ -33,6 +33,7 @@ zDKEffectBossProfile zDKTestExampleBoss()
 #include "zDKRoundingTests.h"
 #include "zDKSupportTests.h"
 #include "zDKUpdateTests.h"
+#include "zDKTurnTests.h"
 
 int zDKTestRunCalculatorChecks()
 {
@@ -729,6 +730,7 @@ int zDKTestRunCalculatorChecks()
     zDKTestIntegerRounding();
     zDKTestSupportAndSections();
     zDKTestUpdates();
+    zDKTestTurnTimeline();
     std::cout << zDKTestChecks << " checks passed.\n";
     return 0;
 }

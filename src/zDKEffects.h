@@ -1,5 +1,6 @@
 #pragma once
 #include "zDKCalculator.h"
+#include "zDKTurnPlan.h"
 #include <vector>
 #include <sstream>
 #include <iomanip>
@@ -113,6 +114,8 @@ struct zDKEffectDefinition
     zDKEffectHealthRule zDKEffectHealthRule = zDKEffectHealthRule::zDKEffectAlways;
     double zDKEffectHealthThresholdPercent = 0;
     zDKEffectAttackTiming zDKEffectTiming = zDKEffectAttackTiming::zDKEffectAlways;
+    zDKTurnBuildUpTrigger zDKEffectBuildUpTrigger = zDKTurnBuildUpTrigger::zDKTurnNone;
+    int zDKEffectBuildUpCount = 0, zDKEffectBuildUpLimit = 0;
 };
 
 enum class zDKEffectSection
@@ -203,6 +206,7 @@ struct zDKEffectUnitProfile
     zDKCalcUnitType zDKEffectElementType = zDKCalcUnitType::zDKCalcAGL;
     zDKCalcUnitClass zDKEffectCombatClass = zDKCalcUnitClass::zDKCalcSuper;
     std::vector<zDKEffectDefinition> zDKEffectEffects;
+    zDKTurnAttackPlan zDKEffectAttackPlan;
 };
 
 struct zDKEffectBossProfile
@@ -252,7 +256,10 @@ inline zDKEffectDefinition zDKEffectCreate(
         zDKEffectEffectData.zDKEffectLastTurn = 3;
     if (zDKEffectCategoryData == zDKEffectCategory::zDKEffectSuperAttackStack ||
         zDKEffectCategoryData == zDKEffectCategory::zDKEffectUltraSuperAttack)
+    {
         zDKEffectEffectData.zDKEffectGroup = zDKEffectDefensePhase::zDKEffectSuperAttack;
+        zDKEffectEffectData.zDKEffectCount = 0;
+    }
     if (zDKEffectCategoryData == zDKEffectCategory::zDKEffectWhenAttacking)
         zDKEffectEffectData.zDKEffectGroup = zDKEffectDefensePhase::zDKEffectWhenAttacking;
     if (zDKEffectCategoryData == zDKEffectCategory::zDKEffectWhenReceiving)
@@ -303,8 +310,26 @@ inline void zDKEffectValidateEffect(const zDKEffectDefinition& zDKEffectEffectDa
     zDKCalcValidateRange(int(zDKEffectEffectData.zDKEffectHealthRule), 0, 2, "Invalid HP condition.");
     zDKCalcValidateRange(int(zDKEffectEffectData.zDKEffectTiming), 0, 2, "Invalid attack timing.");
     zDKCalcValidateRange(
-        zDKEffectEffectData.zDKEffectCount, 1, 10000, "Effect count must be between 1 and 10,000."
+        zDKEffectEffectData.zDKEffectCount,
+        zDKEffectUsesSuperCount(zDKEffectEffectData) ||
+                zDKEffectEffectData.zDKEffectCategory == zDKEffectCategory::zDKEffectSuperAttackStack ||
+                zDKEffectEffectData.zDKEffectCategory == zDKEffectCategory::zDKEffectUltraSuperAttack
+            ? 0
+            : 1,
+        10000,
+        "Active raise count is outside the supported range."
     );
+    zDKCalcValidateRange(int(zDKEffectEffectData.zDKEffectBuildUpTrigger), 0, 3, "Invalid build-up trigger.");
+    zDKCalcValidateRange(zDKEffectEffectData.zDKEffectBuildUpCount, 0, 10000, "Invalid build-up count.");
+    zDKCalcValidateRange(zDKEffectEffectData.zDKEffectBuildUpLimit, 0, 10000, "Invalid build-up limit.");
+    if (zDKEffectEffectData.zDKEffectBuildUpTrigger != zDKTurnBuildUpTrigger::zDKTurnNone &&
+        (zDKEffectIsBoss || zDKEffectEffectData.zDKEffectStat != zDKEffectStat::zDKEffectDefense ||
+         (zDKEffectEffectData.zDKEffectGroup != zDKEffectDefensePhase::zDKEffectWhenAttacking &&
+          zDKEffectEffectData.zDKEffectGroup != zDKEffectDefensePhase::zDKEffectMidBattle)))
+        throw std::invalid_argument("Attack build-up requires a unit DEF effect in Phase 2.");
+    if (zDKEffectEffectData.zDKEffectBuildUpLimit &&
+        zDKEffectEffectData.zDKEffectBuildUpCount > zDKEffectEffectData.zDKEffectBuildUpLimit)
+        throw std::invalid_argument("Starting build-up exceeds its activation limit.");
     zDKCalcValidateRange(
         zDKEffectEffectData.zDKEffectFirstTurn, 1, 9999, "Start turn must be between 1 and 9,999."
     );
@@ -356,12 +381,14 @@ inline void zDKEffectValidateEffect(const zDKEffectDefinition& zDKEffectEffectDa
         (std::floor(zDKEffectEffectData.zDKEffectValue) != zDKEffectEffectData.zDKEffectValue ||
          zDKEffectEffectData.zDKEffectValue > 10000))
         throw std::invalid_argument("Type DEF Boost must be a whole level between 0 and 10,000.");
-    if (std::abs(zDKEffectEffectData.zDKEffectValue * zDKEffectEffectData.zDKEffectCount) > 1e8)
+    if (std::abs(zDKEffectEffectData.zDKEffectValue * zDKEffectEffectData.zDKEffectCount) > 1e8 ||
+        std::abs(zDKEffectEffectData.zDKEffectValue * zDKEffectEffectData.zDKEffectBuildUpCount) > 1e8)
         throw std::invalid_argument("Combined stack amount is too large.");
 }
 
 inline void zDKEffectValidate(const zDKEffectUnitProfile& zDKEffectUnitProfileData)
 {
+    zDKTurnValidate(zDKEffectUnitProfileData.zDKEffectAttackPlan);
     zDKCalcValidateRange(
         zDKEffectUnitProfileData.zDKEffectBaseDefense, 0, 1e12, "Base DEF must be between 0 and 1 trillion."
     );
@@ -458,6 +485,7 @@ inline bool zDKEffectIsActive(
         return false;
     if (!zDKEffectIsBoss &&
         zDKEffectEffectData.zDKEffectGroup == zDKEffectDefensePhase::zDKEffectWhenAttacking &&
+        zDKEffectEffectData.zDKEffectBuildUpTrigger == zDKTurnBuildUpTrigger::zDKTurnNone &&
         !zDKEffectBattleStateData.zDKEffectAfterUnitAttack)
         return false;
     if (!zDKEffectIsBoss &&
@@ -533,7 +561,10 @@ inline zDKCalcUnitStats zDKEffectResolveUnit(
             continue;
         }
         const double zDKEffectValue = zDKEffectEntry.zDKEffectValue *
-            (zDKEffectUsesSuperCount(zDKEffectEntry) ? zDKEffectEntry.zDKEffectCount : 1);
+            (zDKEffectUsesSuperCount(zDKEffectEntry) ? zDKEffectEntry.zDKEffectCount
+                 : zDKEffectEntry.zDKEffectBuildUpTrigger != zDKTurnBuildUpTrigger::zDKTurnNone
+                 ? zDKEffectEntry.zDKEffectBuildUpCount
+                 : 1);
         if (zDKEffectEntry.zDKEffectStat == zDKEffectStat::zDKEffectDefense)
         {
             const int zDKEffectPhaseIndex =

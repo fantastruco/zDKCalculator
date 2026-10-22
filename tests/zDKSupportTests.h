@@ -86,6 +86,7 @@ void zDKTestSupportAndSections()
     zDKTestSuper.zDKEffectValue = 50;
     zDKTestSuper.zDKEffectCount = 2;
     auto zDKTestUltra = zDKEffectCreate(zDKEffectCategory::zDKEffectUltraSuperAttack);
+    zDKTestUltra.zDKEffectCount = 1;
     zDKTestUltra.zDKEffectValue = 30;
     zDKTestUnit.zDKEffectEffects.push_back(zDKTestUltra);
     zDKTestUnit.zDKEffectEffects.push_back(zDKTestSuper);
