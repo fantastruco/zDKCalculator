@@ -1,0 +1,68 @@
+name: Windows build
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: windows-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build and verify
+        shell: pwsh
+        run: ./build.ps1
+      - name: Package portable application
+        shell: pwsh
+        run: ./scripts/zDKPackage.ps1
+      - name: Upload Windows package
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: DokkanDefenseCalculator-Windows-x64
+          path: |
+            dist/DokkanDefenseCalculator.exe
+            dist/DokkanDefenseCalculator-Windows-x64.zip
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload test diagnostics
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: Windows-test-diagnostics
+          path: |
+            build/*.log
+            build/*.png
+          if-no-files-found: ignore
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: windows-2022
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: DokkanDefenseCalculator-Windows-x64
+          path: dist
+      - name: Publish verified Windows release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ZDK_RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          $zDKVersion = $env:ZDK_RELEASE_TAG.Substring(1)
+          ./scripts/zDKPublishArtifacts.ps1 -zDKVersion $zDKVersion -zDKNotesFile "docs/releases/$zDKVersion.md"

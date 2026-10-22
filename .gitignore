@@ -1,0 +1,16 @@
+/build/
+/dist/
+/out/
+/.vs/
+*.obj
+*.pdb
+*.ilk
+*.dokkan
+*.dunit
+*.tmp
+/.env
+/.env.*
+*.pem
+*.key
+__pycache__/
+*.pyc

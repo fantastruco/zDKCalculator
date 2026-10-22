@@ -1,0 +1,14 @@
+Checks: '-*,readability-identifier-naming'
+HeaderFilterRegex: '.*[/\\](src|tests)[/\\].*'
+CheckOptions:
+  readability-identifier-naming.NamespacePrefix: zDK
+  readability-identifier-naming.ClassPrefix: zDK
+  readability-identifier-naming.StructPrefix: zDK
+  readability-identifier-naming.EnumPrefix: zDK
+  readability-identifier-naming.EnumConstantPrefix: zDK
+  readability-identifier-naming.FunctionPrefix: zDK
+  readability-identifier-naming.MethodPrefix: zDK
+  readability-identifier-naming.VariablePrefix: zDK
+  readability-identifier-naming.ParameterPrefix: zDK
+  readability-identifier-naming.MemberPrefix: zDK
+  readability-identifier-naming.FunctionIgnoredRegexp: '^(main|wWinMain|ImGui_ImplWin32_WndProcHandler)$'

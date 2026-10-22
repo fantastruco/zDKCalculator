@@ -1,0 +1,950 @@
+{
+  "version": 1,
+  "source": "../UI_Interface.png",
+  "source_size": [
+    1774,
+    887
+  ],
+  "method": "Manual geometric reconstruction with procedural vector textures",
+  "palette": {
+    "neon": "#ff087a",
+    "highlight": "#ff539f",
+    "surface": "#080507"
+  },
+  "assets": [
+    {
+      "id": "header-wide",
+      "name": "Wide header",
+      "category": "frames",
+      "svg": "svg/frames/header-wide.svg",
+      "png_4x": "png/4x/frames/header-wide.png",
+      "width": 1286,
+      "height": 133,
+      "source_bounds": [
+        14,
+        14,
+        1300,
+        147
+      ],
+      "stretch_insets": [
+        74,
+        24,
+        74,
+        24
+      ],
+      "safe_content_insets": [
+        74,
+        24,
+        74,
+        24
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "divider-tech",
+      "name": "Technical divider",
+      "category": "dividers",
+      "svg": "svg/dividers/divider-tech.svg",
+      "png_4x": "png/4x/dividers/divider-tech.png",
+      "width": 453,
+      "height": 49,
+      "source_bounds": [
+        1309,
+        22,
+        1762,
+        71
+      ],
+      "stretch_insets": null,
+      "safe_content_insets": null,
+      "scaling": "uniform"
+    },
+    {
+      "id": "divider-star",
+      "name": "Star divider",
+      "category": "dividers",
+      "svg": "svg/dividers/divider-star.svg",
+      "png_4x": "png/4x/dividers/divider-star.png",
+      "width": 453,
+      "height": 103,
+      "source_bounds": [
+        1309,
+        50,
+        1762,
+        153
+      ],
+      "stretch_insets": null,
+      "safe_content_insets": null,
+      "scaling": "uniform"
+    },
+    {
+      "id": "panel-main",
+      "name": "Main panel",
+      "category": "panels",
+      "svg": "svg/panels/panel-main.svg",
+      "png_4x": "png/4x/panels/panel-main.png",
+      "width": 754,
+      "height": 483,
+      "source_bounds": [
+        12,
+        153,
+        766,
+        636
+      ],
+      "stretch_insets": [
+        74,
+        54,
+        74,
+        54
+      ],
+      "safe_content_insets": [
+        74,
+        54,
+        74,
+        54
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "panel-tabbed",
+      "name": "Tabbed panel",
+      "category": "panels",
+      "svg": "svg/panels/panel-tabbed.svg",
+      "png_4x": "png/4x/panels/panel-tabbed.png",
+      "width": 504,
+      "height": 246,
+      "source_bounds": [
+        776,
+        149,
+        1280,
+        395
+      ],
+      "stretch_insets": [
+        115,
+        48,
+        55,
+        48
+      ],
+      "safe_content_insets": [
+        115,
+        48,
+        55,
+        48
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "slot-crosshatch",
+      "name": "Crosshatch slot",
+      "category": "slots",
+      "svg": "svg/slots/slot-crosshatch.svg",
+      "png_4x": "png/4x/slots/slot-crosshatch.png",
+      "width": 138,
+      "height": 139,
+      "source_bounds": [
+        1297,
+        155,
+        1435,
+        294
+      ],
+      "stretch_insets": [
+        25,
+        25,
+        25,
+        25
+      ],
+      "safe_content_insets": [
+        25,
+        25,
+        25,
+        25
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "slot-distressed",
+      "name": "Fine-edge slot",
+      "category": "slots",
+      "svg": "svg/slots/slot-distressed.svg",
+      "png_4x": "png/4x/slots/slot-distressed.png",
+      "width": 140,
+      "height": 139,
+      "source_bounds": [
+        1456,
+        155,
+        1596,
+        294
+      ],
+      "stretch_insets": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "safe_content_insets": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "slot-heavy",
+      "name": "Heavy-corner slot",
+      "category": "slots",
+      "svg": "svg/slots/slot-heavy.svg",
+      "png_4x": "png/4x/slots/slot-heavy.png",
+      "width": 142,
+      "height": 140,
+      "source_bounds": [
+        1614,
+        155,
+        1756,
+        295
+      ],
+      "stretch_insets": [
+        30,
+        30,
+        30,
+        30
+      ],
+      "safe_content_insets": [
+        30,
+        30,
+        30,
+        30
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "slot-square",
+      "name": "Square slot",
+      "category": "slots",
+      "svg": "svg/slots/slot-square.svg",
+      "png_4x": "png/4x/slots/slot-square.png",
+      "width": 138,
+      "height": 137,
+      "source_bounds": [
+        1297,
+        296,
+        1435,
+        433
+      ],
+      "stretch_insets": [
+        15,
+        15,
+        15,
+        15
+      ],
+      "safe_content_insets": [
+        15,
+        15,
+        15,
+        15
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "slot-diagonal",
+      "name": "Diagonal-corner slot",
+      "category": "slots",
+      "svg": "svg/slots/slot-diagonal.svg",
+      "png_4x": "png/4x/slots/slot-diagonal.png",
+      "width": 140,
+      "height": 139,
+      "source_bounds": [
+        1456,
+        296,
+        1596,
+        435
+      ],
+      "stretch_insets": [
+        24,
+        24,
+        48,
+        48
+      ],
+      "safe_content_insets": [
+        24,
+        24,
+        48,
+        48
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "slot-notched",
+      "name": "Notched slot",
+      "category": "slots",
+      "svg": "svg/slots/slot-notched.svg",
+      "png_4x": "png/4x/slots/slot-notched.png",
+      "width": 142,
+      "height": 139,
+      "source_bounds": [
+        1614,
+        296,
+        1756,
+        435
+      ],
+      "stretch_insets": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "safe_content_insets": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "button-ornate",
+      "name": "Ornate button",
+      "category": "buttons",
+      "svg": "svg/buttons/button-ornate.svg",
+      "png_4x": "png/4x/buttons/button-ornate.png",
+      "width": 498,
+      "height": 86,
+      "source_bounds": [
+        777,
+        402,
+        1275,
+        488
+      ],
+      "stretch_insets": [
+        56,
+        24,
+        56,
+        24
+      ],
+      "safe_content_insets": [
+        56,
+        24,
+        56,
+        24
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "button-capped",
+      "name": "Capped button",
+      "category": "buttons",
+      "svg": "svg/buttons/button-capped.svg",
+      "png_4x": "png/4x/buttons/button-capped.png",
+      "width": 496,
+      "height": 89,
+      "source_bounds": [
+        779,
+        496,
+        1275,
+        585
+      ],
+      "stretch_insets": [
+        58,
+        24,
+        42,
+        24
+      ],
+      "safe_content_insets": [
+        58,
+        24,
+        42,
+        24
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "banner-section",
+      "name": "Section banner",
+      "category": "frames",
+      "svg": "svg/frames/banner-section.svg",
+      "png_4x": "png/4x/frames/banner-section.png",
+      "width": 755,
+      "height": 117,
+      "source_bounds": [
+        11,
+        640,
+        766,
+        757
+      ],
+      "stretch_insets": [
+        64,
+        28,
+        64,
+        28
+      ],
+      "safe_content_insets": [
+        64,
+        28,
+        64,
+        28
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "strip-left",
+      "name": "Left detail strip",
+      "category": "buttons",
+      "svg": "svg/buttons/strip-left.svg",
+      "png_4x": "png/4x/buttons/strip-left.png",
+      "width": 245,
+      "height": 44,
+      "source_bounds": [
+        777,
+        596,
+        1022,
+        640
+      ],
+      "stretch_insets": [
+        24,
+        12,
+        38,
+        12
+      ],
+      "safe_content_insets": [
+        24,
+        12,
+        38,
+        12
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "strip-right",
+      "name": "Right detail strip",
+      "category": "buttons",
+      "svg": "svg/buttons/strip-right.svg",
+      "png_4x": "png/4x/buttons/strip-right.png",
+      "width": 236,
+      "height": 44,
+      "source_bounds": [
+        1034,
+        596,
+        1270,
+        640
+      ],
+      "stretch_insets": [
+        26,
+        12,
+        26,
+        12
+      ],
+      "safe_content_insets": [
+        26,
+        12,
+        26,
+        12
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "footer-striped",
+      "name": "Striped footer",
+      "category": "frames",
+      "svg": "svg/frames/footer-striped.svg",
+      "png_4x": "png/4x/frames/footer-striped.png",
+      "width": 754,
+      "height": 92,
+      "source_bounds": [
+        13,
+        775,
+        767,
+        867
+      ],
+      "stretch_insets": [
+        132,
+        24,
+        50,
+        24
+      ],
+      "safe_content_insets": [
+        132,
+        24,
+        50,
+        24
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "divider-notch",
+      "name": "Notched divider",
+      "category": "dividers",
+      "svg": "svg/dividers/divider-notch.svg",
+      "png_4x": "png/4x/dividers/divider-notch.png",
+      "width": 366,
+      "height": 22,
+      "source_bounds": [
+        398,
+        763,
+        764,
+        785
+      ],
+      "stretch_insets": null,
+      "safe_content_insets": null,
+      "scaling": "uniform"
+    },
+    {
+      "id": "button-filled",
+      "name": "Filled button",
+      "category": "buttons",
+      "svg": "svg/buttons/button-filled.svg",
+      "png_4x": "png/4x/buttons/button-filled.png",
+      "width": 274,
+      "height": 106,
+      "source_bounds": [
+        777,
+        650,
+        1051,
+        756
+      ],
+      "stretch_insets": [
+        36,
+        28,
+        36,
+        28
+      ],
+      "safe_content_insets": [
+        36,
+        28,
+        36,
+        28
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "button-compact",
+      "name": "Compact button",
+      "category": "buttons",
+      "svg": "svg/buttons/button-compact.svg",
+      "png_4x": "png/4x/buttons/button-compact.png",
+      "width": 204,
+      "height": 58,
+      "source_bounds": [
+        1063,
+        665,
+        1267,
+        723
+      ],
+      "stretch_insets": [
+        28,
+        16,
+        28,
+        16
+      ],
+      "safe_content_insets": [
+        28,
+        16,
+        28,
+        16
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "button-chevron",
+      "name": "Chevron button",
+      "category": "buttons",
+      "svg": "svg/buttons/button-chevron.svg",
+      "png_4x": "png/4x/buttons/button-chevron.png",
+      "width": 268,
+      "height": 102,
+      "source_bounds": [
+        777,
+        761,
+        1045,
+        863
+      ],
+      "stretch_insets": [
+        45,
+        28,
+        42,
+        28
+      ],
+      "safe_content_insets": [
+        45,
+        28,
+        42,
+        28
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "panel-compact-glow",
+      "name": "Compact glow panel",
+      "category": "panels",
+      "svg": "svg/panels/panel-compact-glow.svg",
+      "png_4x": "png/4x/panels/panel-compact-glow.png",
+      "width": 214,
+      "height": 114,
+      "source_bounds": [
+        1053,
+        749,
+        1267,
+        863
+      ],
+      "stretch_insets": [
+        30,
+        28,
+        30,
+        28
+      ],
+      "safe_content_insets": [
+        30,
+        28,
+        30,
+        28
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "orb-reticle",
+      "name": "Reticle orb",
+      "category": "symbols",
+      "svg": "svg/symbols/orb-reticle.svg",
+      "png_4x": "png/4x/symbols/orb-reticle.png",
+      "width": 89,
+      "height": 89,
+      "source_bounds": [
+        1293,
+        449,
+        1382,
+        538
+      ],
+      "stretch_insets": null,
+      "safe_content_insets": null,
+      "scaling": "uniform"
+    },
+    {
+      "id": "orb-segmented",
+      "name": "Segmented orb",
+      "category": "symbols",
+      "svg": "svg/symbols/orb-segmented.svg",
+      "png_4x": "png/4x/symbols/orb-segmented.png",
+      "width": 87,
+      "height": 88,
+      "source_bounds": [
+        1394,
+        450,
+        1481,
+        538
+      ],
+      "stretch_insets": null,
+      "safe_content_insets": null,
+      "scaling": "uniform"
+    },
+    {
+      "id": "orb-scratch",
+      "name": "Scratch orb",
+      "category": "symbols",
+      "svg": "svg/symbols/orb-scratch.svg",
+      "png_4x": "png/4x/symbols/orb-scratch.png",
+      "width": 88,
+      "height": 88,
+      "source_bounds": [
+        1488,
+        450,
+        1576,
+        538
+      ],
+      "stretch_insets": null,
+      "safe_content_insets": null,
+      "scaling": "uniform"
+    },
+    {
+      "id": "sparkle-diamond",
+      "name": "Diamond sparkle",
+      "category": "symbols",
+      "svg": "svg/symbols/sparkle-diamond.svg",
+      "png_4x": "png/4x/symbols/sparkle-diamond.png",
+      "width": 84,
+      "height": 92,
+      "source_bounds": [
+        1580,
+        447,
+        1664,
+        539
+      ],
+      "stretch_insets": null,
+      "safe_content_insets": null,
+      "scaling": "uniform"
+    },
+    {
+      "id": "sparkle-cross",
+      "name": "Cross sparkle",
+      "category": "symbols",
+      "svg": "svg/symbols/sparkle-cross.svg",
+      "png_4x": "png/4x/symbols/sparkle-cross.png",
+      "width": 101,
+      "height": 103,
+      "source_bounds": [
+        1663,
+        439,
+        1764,
+        542
+      ],
+      "stretch_insets": null,
+      "safe_content_insets": null,
+      "scaling": "uniform"
+    },
+    {
+      "id": "tag-small",
+      "name": "Small tag",
+      "category": "tags",
+      "svg": "svg/tags/tag-small.svg",
+      "png_4x": "png/4x/tags/tag-small.png",
+      "width": 115,
+      "height": 56,
+      "source_bounds": [
+        1283,
+        548,
+        1398,
+        604
+      ],
+      "stretch_insets": [
+        24,
+        16,
+        24,
+        16
+      ],
+      "safe_content_insets": [
+        24,
+        16,
+        24,
+        16
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "tag-slanted",
+      "name": "Slanted tag",
+      "category": "tags",
+      "svg": "svg/tags/tag-slanted.svg",
+      "png_4x": "png/4x/tags/tag-slanted.png",
+      "width": 187,
+      "height": 56,
+      "source_bounds": [
+        1398,
+        551,
+        1585,
+        607
+      ],
+      "stretch_insets": [
+        36,
+        14,
+        36,
+        14
+      ],
+      "safe_content_insets": [
+        36,
+        14,
+        36,
+        14
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "divider-double-star",
+      "name": "Double-star divider",
+      "category": "dividers",
+      "svg": "svg/dividers/divider-double-star.svg",
+      "png_4x": "png/4x/dividers/divider-double-star.png",
+      "width": 168,
+      "height": 69,
+      "source_bounds": [
+        1582,
+        540,
+        1750,
+        609
+      ],
+      "stretch_insets": null,
+      "safe_content_insets": null,
+      "scaling": "uniform"
+    },
+    {
+      "id": "button-corner",
+      "name": "Corner button",
+      "category": "buttons",
+      "svg": "svg/buttons/button-corner.svg",
+      "png_4x": "png/4x/buttons/button-corner.png",
+      "width": 209,
+      "height": 63,
+      "source_bounds": [
+        1283,
+        604,
+        1492,
+        667
+      ],
+      "stretch_insets": [
+        46,
+        18,
+        26,
+        18
+      ],
+      "safe_content_insets": [
+        46,
+        18,
+        26,
+        18
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "indicator-chevron",
+      "name": "Chevron indicator",
+      "category": "indicators",
+      "svg": "svg/indicators/indicator-chevron.svg",
+      "png_4x": "png/4x/indicators/indicator-chevron.png",
+      "width": 252,
+      "height": 49,
+      "source_bounds": [
+        1504,
+        621,
+        1756,
+        670
+      ],
+      "stretch_insets": null,
+      "safe_content_insets": null,
+      "scaling": "uniform"
+    },
+    {
+      "id": "progress-arrow",
+      "name": "Arrow progress track",
+      "category": "indicators",
+      "svg": "svg/indicators/progress-arrow.svg",
+      "png_4x": "png/4x/indicators/progress-arrow.png",
+      "width": 208,
+      "height": 38,
+      "source_bounds": [
+        1284,
+        667,
+        1492,
+        705
+      ],
+      "stretch_insets": [
+        20,
+        10,
+        36,
+        10
+      ],
+      "safe_content_insets": [
+        20,
+        10,
+        36,
+        10
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "button-slim",
+      "name": "Slim button",
+      "category": "buttons",
+      "svg": "svg/buttons/button-slim.svg",
+      "png_4x": "png/4x/buttons/button-slim.png",
+      "width": 210,
+      "height": 54,
+      "source_bounds": [
+        1284,
+        705,
+        1494,
+        759
+      ],
+      "stretch_insets": [
+        25,
+        16,
+        25,
+        16
+      ],
+      "safe_content_insets": [
+        25,
+        16,
+        25,
+        16
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "panel-compact",
+      "name": "Compact panel",
+      "category": "panels",
+      "svg": "svg/panels/panel-compact.svg",
+      "png_4x": "png/4x/panels/panel-compact.png",
+      "width": 212,
+      "height": 111,
+      "source_bounds": [
+        1283,
+        755,
+        1495,
+        866
+      ],
+      "stretch_insets": [
+        45,
+        26,
+        26,
+        35
+      ],
+      "safe_content_insets": [
+        45,
+        26,
+        26,
+        35
+      ],
+      "scaling": "nine-slice"
+    },
+    {
+      "id": "texture-dissolve",
+      "name": "Dissolve highlight",
+      "category": "textures",
+      "svg": "svg/textures/texture-dissolve.svg",
+      "png_4x": "png/4x/textures/texture-dissolve.png",
+      "width": 259,
+      "height": 60,
+      "source_bounds": [
+        1496,
+        673,
+        1755,
+        733
+      ],
+      "stretch_insets": null,
+      "safe_content_insets": null,
+      "scaling": "uniform"
+    },
+    {
+      "id": "texture-halftone",
+      "name": "Halftone fade",
+      "category": "textures",
+      "svg": "svg/textures/texture-halftone.svg",
+      "png_4x": "png/4x/textures/texture-halftone.png",
+      "width": 259,
+      "height": 59,
+      "source_bounds": [
+        1496,
+        734,
+        1755,
+        793
+      ],
+      "stretch_insets": null,
+      "safe_content_insets": null,
+      "scaling": "uniform"
+    },
+    {
+      "id": "texture-scratch",
+      "name": "Diagonal scratch",
+      "category": "textures",
+      "svg": "svg/textures/texture-scratch.svg",
+      "png_4x": "png/4x/textures/texture-scratch.png",
+      "width": 259,
+      "height": 73,
+      "source_bounds": [
+        1498,
+        794,
+        1757,
+        867
+      ],
+      "stretch_insets": null,
+      "safe_content_insets": null,
+      "scaling": "uniform"
+    }
+  ]
+}

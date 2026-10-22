@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="366" height="22" viewBox="0 0 366 22" fill="none" role="img" aria-labelledby="title desc">
+<title id="title">Notched divider — mobile normal</title>
+<desc id="desc">Vector reconstruction of UI_Interface.png. Editable paths, gradients and patterns; transparent exterior; no raster content.</desc>
+<defs>
+  <linearGradient id="body" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+   <stop stop-color="#240514" stop-opacity=".96" /><stop offset=".30" stop-color="#080507" stop-opacity=".96" /><stop offset=".70" stop-color="#080507" stop-opacity=".96" /><stop offset="1" stop-color="#32051b" stop-opacity=".96" />
+  </linearGradient>
+  <linearGradient id="fill" x1="0" y1="0" x2=".45" y2="1"><stop stop-color="#15040d" /><stop offset=".45" stop-color="#49051f" /><stop offset="1" stop-color="#ff087a" /></linearGradient>
+  <linearGradient id="fade"><stop stop-color="#ff087a" /><stop offset="1" stop-color="#ff087a" stop-opacity="0" /></linearGradient>
+  <linearGradient id="sweep"><stop stop-color="#ff087a" stop-opacity="0" /><stop offset=".55" stop-color="#87013d" stop-opacity=".5" /><stop offset=".96" stop-color="#ff1684" /><stop offset="1" stop-color="#ffe7f4" /></linearGradient>
+  <linearGradient id="cornerMask" x1="0" y1="0" x2="1" y2="1"><stop stop-color="white" /><stop offset=".29" stop-color="white" stop-opacity=".4" /><stop offset=".48" stop-color="black" /><stop offset=".62" stop-color="black" /><stop offset="1" stop-color="white" /></linearGradient>
+  <pattern id="hatch" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(44)"><path d="M0,0 V12 M3,0 V12 M7,0 V12" fill="none" stroke="#d91b6d" stroke-width=".55" /><path d="M0,4 H12 M0,10 H12" fill="none" stroke="#c40058" stroke-width=".42" /></pattern>
+  <pattern id="fineHatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-44)"><path d="M0,0 V7 M3,0 V7" fill="none" stroke="#d91b6d" stroke-width=".42" /></pattern>
+  <clipPath id="bodyClip"><path d="M8,11 L11,8 L355,8 L358,11 L358,11 L355,14 L11,14 L8,11 Z" /></clipPath>
+  <mask id="textureMask"><rect width="366" height="22" fill="url(#cornerMask)" /></mask>
+  <filter id="glow" x="-10%" y="-25%" width="120%" height="150%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="1" /></filter>
+ </defs><g id="glow-layer" opacity=".22" filter="url(#glow)"><path d="M8,8.36 L142.74,8.36 L153.72,14.36 L212.28,14.36 L223.26,8.36 L358,8.36" fill="none" stroke="#d91b6d" stroke-width="1.4" opacity="1" stroke-linecap="square" stroke-linejoin="miter" /><path d="M25.62,10.36 L139.08,10.36" fill="none" stroke="#d91b6d" stroke-width="0.6" opacity="0.6" stroke-linecap="square" stroke-linejoin="miter" /></g><g id="geometry"><path d="M8,8.36 L142.74,8.36 L153.72,14.36 L212.28,14.36 L223.26,8.36 L358,8.36" fill="none" stroke="#d91b6d" stroke-width="1.4" opacity="1" stroke-linecap="square" stroke-linejoin="miter" /><path d="M25.62,10.36 L139.08,10.36" fill="none" stroke="#d91b6d" stroke-width="0.6" opacity="0.6" stroke-linecap="square" stroke-linejoin="miter" /></g>
+</svg>
