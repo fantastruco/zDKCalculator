@@ -992,7 +992,8 @@ int zDKWinRunApplication(HINSTANCE zDKWinInstance)
     ImGui_ImplWin32_EnableDpiAwareness();
     std::filesystem::path zDKWinCapturePath, zDKWinUiCheckPath;
     bool zDKWinCaptureExample = false, zDKWinSupportExample = false, zDKWinPreviewTopmost = false,
-         zDKWinPreviewSettings = false, zDKWinPreviewUpdates = false;
+         zDKWinPreviewSettings = false, zDKWinPreviewUpdates = false, zDKWinTurnExample = false,
+         zDKWinPreviewTurnPlan = false;
     int zDKWinForcedWidth = 0, zDKWinForcedHeight = 0, zDKWinPreviewEffect = -1, zDKWinCaptureAt = 40,
         zDKWinInitialSection = 0;
     bool zDKWinShowcase = false, zDKWinPreviewSwitch = false, zDKWinPreviewPicker = false;
@@ -1029,6 +1030,10 @@ int zDKWinRunApplication(HINSTANCE zDKWinInstance)
             zDKWinPreviewSettings = true;
         else if (zDKWinArgument == L"--preview-updates")
             zDKWinPreviewUpdates = true;
+        else if (zDKWinArgument == L"--turn-example")
+            zDKWinTurnExample = true;
+        else if (zDKWinArgument == L"--preview-plan")
+            zDKWinPreviewTurnPlan = true;
         else if (zDKWinArgument == L"--capture-frame" && zDKWinIndex + 1 < zDKWinArgumentCount)
             zDKWinCaptureAt = std::clamp(_wtoi(zDKWinArguments[++zDKWinIndex]), 4, 240);
         else if (zDKWinArgument == L"--example")
@@ -1045,9 +1050,10 @@ int zDKWinRunApplication(HINSTANCE zDKWinInstance)
         else if (zDKWinArgument == L"--section" && zDKWinIndex + 1 < zDKWinArgumentCount)
         {
             std::wstring zDKWinSection = zDKWinArguments[++zDKWinIndex];
-            zDKWinInitialSection = (zDKWinSection == L"effects" || zDKWinSection == L"tanking")          ? 1
-                : (zDKWinSection == L"setup" || zDKWinSection == L"skills" || zDKWinSection == L"calcs") ? 2
-                                                                                                         : 0;
+            zDKWinInitialSection = (zDKWinSection == L"effects" || zDKWinSection == L"tanking")         ? 1
+                : (zDKWinSection == L"setup" || zDKWinSection == L"skills" || zDKWinSection == L"turn") ? 2
+                : zDKWinSection == L"calcs"                                                             ? 3
+                                                                                                        : 0;
         }
         else if (zDKWinArgument == L"--width" && zDKWinIndex + 1 < zDKWinArgumentCount)
             zDKWinForcedWidth = _wtoi(zDKWinArguments[++zDKWinIndex]);
@@ -1059,7 +1065,7 @@ int zDKWinRunApplication(HINSTANCE zDKWinInstance)
             zDKWinTransitionScale = std::clamp(float(_wtof(zDKWinArguments[++zDKWinIndex])), .75f, 4.f);
     }
     LocalFree(zDKWinArguments);
-    zDKUISelectedSubviews[zDKUIActiveTab] = zDKWinInitialSection;
+    zDKUISelectedSubviews[zDKUIActiveTab] = std::clamp(zDKWinInitialSection, 0, zDKUIActiveTab == 2 ? 3 : 2);
     bool zDKWinDiagnostic = !zDKWinCapturePath.empty() || !zDKWinUiCheckPath.empty();
     zDKWinDiagnosticWindow = zDKWinDiagnostic;
     zDKTestInteractionChecks zDKWinSmoke;
@@ -1244,6 +1250,44 @@ int zDKWinRunApplication(HINSTANCE zDKWinInstance)
             zDKUICurrentUnit.zDKEffectEffects.push_back(zDKWinEntry);
         }
     }
+    if (zDKWinDiagnostic && zDKWinTurnExample)
+    {
+        zDKUICurrentUnit = zDKEffectCreateEmptyUnitProfile();
+        zDKUICurrentUnit.zDKEffectName = "Mixed attack example";
+        zDKUICurrentUnit.zDKEffectBaseDefense = 13169;
+        zDKUICurrentUnit.zDKEffectLeaderSkillPercent = 440;
+        for (const auto& zDKWinPhase : std::vector<std::pair<zDKEffectDefensePhase, double>>{
+                 {zDKEffectDefensePhase::zDKEffectStartOfTurn, 300},
+                 {zDKEffectDefensePhase::zDKEffectDomain, 15},
+                 {zDKEffectDefensePhase::zDKEffectItem, 20},
+                 {zDKEffectDefensePhase::zDKEffectLinks, 10}
+             })
+        {
+            auto zDKWinEffect = zDKEffectCreate(zDKEffectCategory::zDKEffectBasic);
+            zDKWinEffect.zDKEffectGroup = zDKWinPhase.first;
+            zDKWinEffect.zDKEffectValue = zDKWinPhase.second;
+            zDKUICurrentUnit.zDKEffectEffects.push_back(zDKWinEffect);
+        }
+        auto zDKWinBuild = zDKEffectCreate(zDKEffectCategory::zDKEffectWhenAttacking);
+        zDKWinBuild.zDKEffectValue = 50;
+        zDKWinBuild.zDKEffectBuildUpTrigger = zDKTurnBuildUpTrigger::zDKTurnAnyAttack;
+        zDKWinBuild.zDKEffectBuildUpLimit = 8;
+        auto zDKWinSA = zDKEffectCreate(zDKEffectCategory::zDKEffectSuperAttackStack);
+        zDKWinSA.zDKEffectValue = 20;
+        auto zDKWinUltra = zDKEffectCreate(zDKEffectCategory::zDKEffectUltraSuperAttack);
+        zDKWinUltra.zDKEffectValue = 50;
+        zDKUICurrentUnit.zDKEffectEffects.push_back(zDKWinBuild);
+        zDKUICurrentUnit.zDKEffectEffects.push_back(zDKWinSA);
+        zDKUICurrentUnit.zDKEffectEffects.push_back(zDKWinUltra);
+        zDKUICurrentUnit.zDKEffectAttackPlan.zDKTurnAttacks = {
+            zDKTurnAttackKind::zDKTurnUltra,
+            zDKTurnAttackKind::zDKTurnNormal,
+            zDKTurnAttackKind::zDKTurnSuper,
+            zDKTurnAttackKind::zDKTurnSuper
+        };
+        zDKUIActiveTab = 2;
+        zDKUISelectedSubviews[2] = 2;
+    }
     if (zDKWinShowcase)
     {
         zDKUICurrentUnit.zDKEffectName = "Goku Black";
@@ -1341,6 +1385,8 @@ int zDKWinRunApplication(HINSTANCE zDKWinInstance)
         if (zDKWinPreviewSwitch && zDKWinFrames == 10)
             zDKUIActiveTab = 1;
         ImGui::NewFrame();
+        if (zDKWinDiagnostic && zDKWinPreviewTurnPlan && zDKWinFrames == 10)
+            zDKUIRequestTurnPlan = true;
         if (zDKWinDiagnostic && (zDKWinPreviewSettings || zDKWinPreviewUpdates) && zDKWinFrames == 10)
         {
             ImGui::Begin("Dokkan Defense Calculator");
@@ -1389,7 +1435,7 @@ int zDKWinRunApplication(HINSTANCE zDKWinInstance)
             }
             if (zDKUICollectInteractionProbes)
             {
-                if (zDKWinFrames >= 1800 && !zDKWinSmoke.zDKTestDone)
+                if (zDKWinFrames >= 2600 && !zDKWinSmoke.zDKTestDone)
                     zDKWinSmoke.zDKTestExpect(false, "UI checks timed out");
                 if (zDKWinSmoke.zDKTestDone)
                 {

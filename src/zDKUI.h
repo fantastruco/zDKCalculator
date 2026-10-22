@@ -1,5 +1,6 @@
 #pragma once
 #include "zDKEffects.h"
+#include "zDKTurnTimeline.h"
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -1312,6 +1313,24 @@ void zDKUIDrawPresetControls(HWND zDKUIWindowHandle)
     ImGui::PopStyleVar();
 }
 
+std::string zDKUIBuildUpDescription(const zDKEffectDefinition& zDKUIEffectData)
+{
+    static const char* zDKUITriggers[] = {
+        "",
+        "with each attack performed",
+        "with each Super Attack performed",
+        "with each Ultra Super Attack performed"
+    };
+    std::string zDKUIText = "DEF +" + zDKUIFormatDecimal(zDKUIEffectData.zDKEffectValue, 1) + "% " +
+        zDKUITriggers[int(zDKUIEffectData.zDKEffectBuildUpTrigger)];
+    if (zDKUIEffectData.zDKEffectBuildUpLimit)
+        zDKUIText += " (up to +" +
+            zDKUIFormatDecimal(zDKUIEffectData.zDKEffectValue * zDKUIEffectData.zDKEffectBuildUpLimit, 1) +
+            "%)";
+    zDKUIText += "; " + std::to_string(zDKUIEffectData.zDKEffectBuildUpCount) + " activations already gained";
+    return zDKUIText;
+}
+
 std::string zDKUIBuildEffectSummary(const zDKEffectDefinition& zDKUIEffectData)
 {
     if (!zDKUIEffectData.zDKEffectName.empty() &&
@@ -1319,6 +1338,8 @@ std::string zDKUIBuildEffectSummary(const zDKEffectDefinition& zDKUIEffectData)
         return zDKUIEffectData.zDKEffectName;
     if (zDKEffectIsGuard(zDKUIEffectData))
         return "Guards all attacks";
+    if (zDKUIEffectData.zDKEffectBuildUpTrigger != zDKTurnBuildUpTrigger::zDKTurnNone)
+        return zDKUIBuildUpDescription(zDKUIEffectData);
     const std::string zDKUIAmount = zDKUIFormatDecimal(
         zDKUIEffectData.zDKEffectValue,
         zDKUIEffectData.zDKEffectValue == std::floor(zDKUIEffectData.zDKEffectValue) ? 0 : 1
@@ -1381,6 +1402,8 @@ std::string zDKUIBuildEffectDescription(const zDKEffectDefinition& zDKUIEffectDa
     std::string zDKUIText;
     if (zDKEffectIsGuard(zDKUIEffectData))
         zDKUIText = "Guards all attacks";
+    else if (zDKUIEffectData.zDKEffectBuildUpTrigger != zDKTurnBuildUpTrigger::zDKTurnNone)
+        zDKUIText = zDKUIBuildUpDescription(zDKUIEffectData);
     else if (zDKUIEffectData.zDKEffectStat == zDKEffectStat::zDKEffectDamageReduction)
         zDKUIText = "Reduces damage received by " + zDKUIAmount + "%";
     else if (zDKUIEffectData.zDKEffectStat == zDKEffectStat::zDKEffectNormalDamageReduction)
@@ -1419,7 +1442,8 @@ std::string zDKUIBuildEffectDescription(const zDKEffectDefinition& zDKUIEffectDa
                      ) +
             std::to_string(zDKUIEffectData.zDKEffectCount) + " raises applied)";
     if (!zDKUIIsBoss && zDKUIEffectData.zDKEffectStat == zDKEffectStat::zDKEffectDefense &&
-        !zDKEffectIsGuard(zDKUIEffectData) && !zDKEffectUsesSuperCount(zDKUIEffectData))
+        !zDKEffectIsGuard(zDKUIEffectData) && !zDKEffectUsesSuperCount(zDKUIEffectData) &&
+        zDKUIEffectData.zDKEffectBuildUpTrigger == zDKTurnBuildUpTrigger::zDKTurnNone)
     {
         if (zDKUIEffectData.zDKEffectGroup == zDKEffectDefensePhase::zDKEffectStartOfTurn)
             zDKUIText += " at start of turn";
@@ -1503,6 +1527,14 @@ void zDKUIDrawEffectFields(
         zDKUIEffectData.zDKEffectCategory = zDKUICategories[zDKUICategoryIndex];
         zDKUIEffectData.zDKEffectGroup =
             zDKEffectCreate(zDKUIEffectData.zDKEffectCategory, zDKUIIsBoss).zDKEffectGroup;
+        if (zDKEffectIsGuard(zDKUIEffectData))
+            zDKUIEffectData.zDKEffectCount =
+                zDKUIEffectData.zDKEffectCategory == zDKEffectCategory::zDKEffectSuperAttackStack ||
+                    zDKUIEffectData.zDKEffectCategory == zDKEffectCategory::zDKEffectUltraSuperAttack
+                ? 0
+                : 1;
+        else if (!zDKEffectUsesSuperCount(zDKUIEffectData))
+            zDKUIEffectData.zDKEffectCount = std::max(1, zDKUIEffectData.zDKEffectCount);
     }
     {
         std::vector<zDKEffectStat> zDKUIAllowed = zDKUIIsBoss
@@ -1535,7 +1567,12 @@ void zDKUIDrawEffectFields(
                     {
                         zDKUIEffectData.zDKEffectMultiplicative = false;
                         zDKUIEffectData.zDKEffectValue = 0;
-                        zDKUIEffectData.zDKEffectCount = 1;
+                        zDKUIEffectData.zDKEffectCount = zDKUIEffectData.zDKEffectCategory ==
+                                    zDKEffectCategory::zDKEffectSuperAttackStack ||
+                                zDKUIEffectData.zDKEffectCategory ==
+                                    zDKEffectCategory::zDKEffectUltraSuperAttack
+                            ? 0
+                            : 1;
                     }
                 }
                 zDKUIRecordControlProbe("stat-option-" + std::to_string(int(zDKUIStatisticIndex)));
@@ -1616,6 +1653,26 @@ void zDKUIDrawEffectFields(
                 "amount; encounter Turn and HP conditions remain editable."
             );
         }
+        const bool zDKUIBuildUpEligible = !zDKUIIsBoss &&
+            zDKUIEffectData.zDKEffectStat == zDKEffectStat::zDKEffectDefense &&
+            zDKUIEffectData.zDKEffectCategory != zDKEffectCategory::zDKEffectSupport &&
+            (zDKUIEffectData.zDKEffectGroup == zDKEffectDefensePhase::zDKEffectWhenAttacking ||
+             zDKUIEffectData.zDKEffectGroup == zDKEffectDefensePhase::zDKEffectMidBattle);
+        if (zDKUIBuildUpEligible)
+        {
+            int zDKUITrigger = int(zDKUIEffectData.zDKEffectBuildUpTrigger);
+            if (zDKUIDrawComboInput("DEF activation", zDKUITrigger, zDKTurnBuildUpNames, 4))
+            {
+                zDKUIEffectData.zDKEffectBuildUpTrigger = zDKTurnBuildUpTrigger(zDKUITrigger);
+                if (!zDKUITrigger)
+                    zDKUIEffectData.zDKEffectBuildUpCount = zDKUIEffectData.zDKEffectBuildUpLimit = 0;
+            }
+        }
+        else
+        {
+            zDKUIEffectData.zDKEffectBuildUpTrigger = zDKTurnBuildUpTrigger::zDKTurnNone;
+            zDKUIEffectData.zDKEffectBuildUpCount = zDKUIEffectData.zDKEffectBuildUpLimit = 0;
+        }
         if (zDKEffectIsGuard(zDKUIEffectData))
             zDKUIDrawWrappedText("Guards all attacks while this skill effect is active.");
         else if (zDKUIEffectData.zDKEffectStat == zDKEffectStat::zDKEffectTypeDefenseBoost)
@@ -1627,17 +1684,35 @@ void zDKUIDrawEffectFields(
                 zDKUIDrawIntegerField("count", zDKUIEffectData.zDKEffectCount);
             }
         }
+        else if (zDKUIEffectData.zDKEffectBuildUpTrigger != zDKTurnBuildUpTrigger::zDKTurnNone)
+        {
+            zDKUIDrawNumberInput("DEF per activation (%)", zDKUIEffectData.zDKEffectValue, "%.1f");
+            zDKUIDrawFieldPair(
+                "Activations already gained",
+                "Maximum activations",
+                [&] { zDKUIDrawIntegerField("build-count", zDKUIEffectData.zDKEffectBuildUpCount); },
+                [&] { zDKUIDrawIntegerField("build-limit", zDKUIEffectData.zDKEffectBuildUpLimit); }
+            );
+            zDKUIDrawWrappedText(
+                "Use 0 for an uncapped maximum. The attack plan adds matching activations up to this limit."
+            );
+        }
         else if (zDKEffectUsesSuperCount(zDKUIEffectData))
             zDKUIDrawFieldPair(
                 zDKUIEffectData.zDKEffectCategory == zDKEffectCategory::zDKEffectUltraSuperAttack
                     ? "Boost per Ultra SA (%)"
                     : "Boost per SA effect (%)",
-                "SA raises applied",
+                "Raises already active",
                 [&] { zDKUIDrawNumberField("amount", zDKUIEffectData.zDKEffectValue, "%.1f"); },
                 [&] { zDKUIDrawIntegerField("count", zDKUIEffectData.zDKEffectCount); }
             );
         else
             zDKUIDrawNumberInput("Effect amount (%)", zDKUIEffectData.zDKEffectValue, "%.1f");
+        if (zDKEffectUsesSuperCount(zDKUIEffectData))
+            zDKUIDrawWrappedText(
+                "For the turn preview, enter raises already active before attacking. Use 0 for a fresh SA "
+                "effect."
+            );
         if (!zDKEffectIsGuard(zDKUIEffectData) &&
             zDKUIEffectData.zDKEffectStat != zDKEffectStat::zDKEffectTypeDefenseBoost &&
             zDKUIEffectData.zDKEffectStat != zDKEffectStat::zDKEffectPenetration)
@@ -2239,9 +2314,216 @@ void zDKUIDrawHealthTrack(float zDKUIFraction)
     ImGui::Dummy({zDKUIWidth, zDKUIHeight});
 }
 
+bool zDKUIRequestTurnPlan = false;
+zDKTurnAttackPlan zDKUITurnPlanDraft;
+std::string zDKUITurnPlanError;
+
+void zDKUIDrawTurnPlanModal()
+{
+    if (zDKUIRequestTurnPlan)
+    {
+        zDKUITurnPlanDraft = zDKUICurrentUnit.zDKEffectAttackPlan;
+        zDKUITurnPlanError.clear();
+        ImGui::OpenPopup("Attack plan");
+        zDKUIRequestTurnPlan = false;
+    }
+    zDKUIConfigureFullScreenModal();
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, zDKUIScaleSize(28, 28));
+    if (ImGui::BeginPopupModal(
+            "Attack plan",
+            nullptr,
+            ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+                ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoScrollbar |
+                ImGuiWindowFlags_NoScrollWithMouse
+        ))
+    {
+        zDKUIDrawModalHeader("Attack Plan");
+        zDKUISmoothChild(
+            "turn-plan-body",
+            {0, std::max(zDKUIScalePixels(100), ImGui::GetContentRegionAvail().y - zDKUIScalePixels(142))},
+            ImGuiChildFlags_None,
+            ImGuiWindowFlags_NoBackground
+        );
+        zDKUIDrawWrappedText(
+            "Set the opening attack, then each additional in the order performed.", zDKUIWhite
+        );
+        zDKUIAddSpacing();
+        int zDKUIRemove = -1, zDKUIMove = -1, zDKUIDirection = 0;
+        auto& zDKUIAttacks = zDKUITurnPlanDraft.zDKTurnAttacks;
+        for (int zDKUIIndex = 0; zDKUIIndex < int(zDKUIAttacks.size()); ++zDKUIIndex)
+        {
+            ImGui::PushID(zDKUIIndex);
+            zDKUIDrawLabel(
+                zDKUIIndex == 0 ? "Opening attack" : ("Additional " + std::to_string(zDKUIIndex)).c_str()
+            );
+            if (ImGui::BeginTable("attack-row", 4, ImGuiTableFlags_SizingStretchProp))
+            {
+                ImGui::TableSetupColumn("kind", ImGuiTableColumnFlags_WidthStretch);
+                for (const char* zDKUIColumn : {"up", "down", "remove"})
+                    ImGui::TableSetupColumn(
+                        zDKUIColumn, ImGuiTableColumnFlags_WidthFixed, zDKUIScalePixels(38)
+                    );
+                ImGui::TableNextColumn();
+                if (zDKUIBeginCombo("##kind", zDKTurnAttackNames[int(zDKUIAttacks[zDKUIIndex])]))
+                {
+                    for (int zDKUIKind = 0; zDKUIKind < 3; ++zDKUIKind)
+                    {
+                        if (ImGui::Selectable(
+                                zDKTurnAttackNames[zDKUIKind], int(zDKUIAttacks[zDKUIIndex]) == zDKUIKind
+                            ))
+                            zDKUIAttacks[zDKUIIndex] = zDKTurnAttackKind(zDKUIKind);
+                        zDKUIRecordControlProbe(
+                            "turn-option-" + std::to_string(zDKUIIndex) + "-" + std::to_string(zDKUIKind)
+                        );
+                    }
+                    ImGui::EndCombo();
+                }
+                zDKUIRecordControlProbe("turn-kind-" + std::to_string(zDKUIIndex));
+                ImGui::TableNextColumn();
+                ImGui::BeginDisabled(zDKUIIndex == 0);
+                if (zDKUIDrawButton("Up", zDKUIScaleSize(38, 44)))
+                {
+                    zDKUIMove = zDKUIIndex;
+                    zDKUIDirection = -1;
+                }
+                zDKUIRecordControlProbe("turn-up-" + std::to_string(zDKUIIndex));
+                ImGui::EndDisabled();
+                ImGui::TableNextColumn();
+                ImGui::BeginDisabled(zDKUIIndex + 1 == int(zDKUIAttacks.size()));
+                if (zDKUIDrawButton("Dn", zDKUIScaleSize(38, 44)))
+                {
+                    zDKUIMove = zDKUIIndex;
+                    zDKUIDirection = 1;
+                }
+                zDKUIRecordControlProbe("turn-down-" + std::to_string(zDKUIIndex));
+                ImGui::EndDisabled();
+                ImGui::TableNextColumn();
+                if (zDKUIDrawButton("×", zDKUIScaleSize(38, 44)))
+                    zDKUIRemove = zDKUIIndex;
+                zDKUIRecordControlProbe("turn-remove-" + std::to_string(zDKUIIndex));
+                ImGui::EndTable();
+            }
+            zDKUIAddSpacing(6);
+            ImGui::PopID();
+        }
+        if (zDKUIRemove >= 0)
+            zDKUIAttacks.erase(zDKUIAttacks.begin() + zDKUIRemove);
+        else if (zDKUIMove >= 0)
+            std::swap(zDKUIAttacks[zDKUIMove], zDKUIAttacks[zDKUIMove + zDKUIDirection]);
+        ImGui::BeginDisabled(zDKUIAttacks.size() >= zDKTurnMaximumAttacks);
+        if (zDKUIDrawButton("+ Add attack", {-1, 0}))
+            zDKUIAttacks.push_back(zDKTurnAttackKind::zDKTurnSuper);
+        ImGui::EndDisabled();
+        zDKUIAddSpacing();
+        zDKUIDrawWrappedText(
+            "Choose the actual SA or Ultra SA performed. Additional-attack chances are not rolled."
+        );
+        if (!zDKUITurnPlanError.empty())
+            zDKUIDrawWrappedText(zDKUITurnPlanError, zDKUIPink);
+        zDKUIEndSmoothChild();
+        zDKUIAddSpacing(2);
+        if (zDKUIDrawButton("Apply attack plan", {-1, zDKUIScalePixels(54)}))
+        {
+            try
+            {
+                zDKTurnValidate(zDKUITurnPlanDraft);
+                auto zDKUITestUnit = zDKUICurrentUnit;
+                zDKUITestUnit.zDKEffectAttackPlan = zDKUITurnPlanDraft;
+                zDKTurnCalculateTimeline(zDKUITestUnit, zDKUICurrentBoss, zDKUICurrentBattle);
+                zDKUICurrentUnit.zDKEffectAttackPlan = zDKUITurnPlanDraft;
+                ImGui::CloseCurrentPopup();
+            }
+            catch (const std::exception& zDKUIError)
+            {
+                zDKUITurnPlanError = zDKUIError.what();
+            }
+        }
+        zDKUIAddSpacing(4);
+        if (zDKUIDrawButton("Cancel attack plan", {-1, zDKUIScalePixels(54)}) ||
+            ImGui::IsKeyPressed(ImGuiKey_Escape))
+            ImGui::CloseCurrentPopup();
+        ImGui::EndPopup();
+    }
+    ImGui::PopStyleVar();
+}
+
+void zDKUIDrawTurnDefense()
+{
+    if (zDKUIDrawButton("Edit attack plan", {-1, 0}))
+        zDKUIRequestTurnPlan = true;
+    zDKUIAddSpacing();
+    const auto zDKUIPoints = zDKTurnCalculateTimeline(zDKUICurrentUnit, zDKUICurrentBoss, zDKUICurrentBattle);
+    const auto& zDKUIFinal = zDKUIPoints.back();
+    zDKUIDrawMetricCard(
+        zDKUIPoints.size() > 1 ? "END-OF-TURN DEF" : "STARTING DEF",
+        zDKUIFormatInteger(
+            zDKUISelectedAttackKind ? zDKUIFinal.zDKTurnSuperDefense : zDKUIFinal.zDKTurnNormalDefense
+        ),
+        zDKUIWhite,
+        96
+    );
+    zDKUIDrawWrappedText(
+        "SA and Ultra SA counts in Unit Effects are your starting raises. The preview adds each planned "
+        "attack."
+    );
+    if (zDKUICurrentUnit.zDKEffectUseManualDefense)
+        zDKUIDrawWrappedText("Manual DEF stays fixed. Enter base DEF to calculate growth.", zDKUIPink);
+    std::ostringstream zDKUIReport;
+    zDKUIReport << "Dokkan Defense Calculator\nTurn " << zDKUICurrentBattle.zDKEffectTurn << " attack plan\n";
+    for (const auto& zDKUIPoint : zDKUIPoints)
+    {
+        ImGui::PushID(zDKUIPoint.zDKTurnAttackNumber);
+        zDKUIAddSpacing(10);
+        zDKUIDrawDivider();
+        const std::string zDKUITitle = zDKUIPoint.zDKTurnAttackNumber == 0
+            ? "Before attacking"
+            : "After attack " + std::to_string(zDKUIPoint.zDKTurnAttackNumber) + ": " +
+                zDKTurnAttackNames[int(zDKUIPoint.zDKTurnKind)];
+        zDKUIDrawWrappedText(zDKUITitle, zDKUIWhite);
+        zDKUIDrawStatisticRow("DEF vs normals", zDKUIFormatInteger(zDKUIPoint.zDKTurnNormalDefense));
+        zDKUIDrawStatisticRow("DEF vs Super Attacks", zDKUIFormatInteger(zDKUIPoint.zDKTurnSuperDefense));
+        if (zDKUIPoint.zDKTurnAttackNumber > 0)
+        {
+            const auto& zDKUIPrevious = zDKUIPoints[zDKUIPoint.zDKTurnAttackNumber - 1];
+            const double zDKUIGain = zDKUISelectedAttackKind
+                ? zDKUIPoint.zDKTurnSuperDefense - zDKUIPrevious.zDKTurnSuperDefense
+                : zDKUIPoint.zDKTurnNormalDefense - zDKUIPrevious.zDKTurnNormalDefense;
+            zDKUIDrawStatisticRow(
+                "DEF change",
+                (zDKUIGain >= 0 ? "+" : "") + zDKUIFormatInteger(zDKUIGain),
+                zDKUIGain >= 0 ? zDKUIGreen : zDKUIPink
+            );
+        }
+        if (zDKUIBeginReveal("Incoming damage"))
+        {
+            zDKUIDrawStatisticRow(
+                "Effective DEF vs normals", zDKUIFormatInteger(zDKUIPoint.zDKTurnNormalEffectiveDefense)
+            );
+            zDKUIDrawStatisticRow(
+                "Effective DEF vs SA", zDKUIFormatInteger(zDKUIPoint.zDKTurnSuperEffectiveDefense)
+            );
+            zDKUIDrawStatisticRow("Max normal damage", zDKUIFormatInteger(zDKUIPoint.zDKTurnNormalMaxDamage));
+            zDKUIDrawStatisticRow("Max SA damage", zDKUIFormatInteger(zDKUIPoint.zDKTurnSuperMaxDamage));
+            zDKUIEndReveal();
+        }
+        zDKUIReport << zDKUITitle
+                    << "\nDEF vs normals: " << zDKUIFormatInteger(zDKUIPoint.zDKTurnNormalDefense)
+                    << "\nDEF vs Super Attacks: " << zDKUIFormatInteger(zDKUIPoint.zDKTurnSuperDefense)
+                    << "\nMax normal damage: " << zDKUIFormatInteger(zDKUIPoint.zDKTurnNormalMaxDamage)
+                    << "\nMax SA damage: " << zDKUIFormatInteger(zDKUIPoint.zDKTurnSuperMaxDamage) << "\n\n";
+        ImGui::PopID();
+    }
+    zDKUIAddSpacing();
+    if (zDKUIDrawButton("Copy turn DEF", {-1, 0}))
+    {
+        ImGui::SetClipboardText(zDKUIReport.str().c_str());
+        zDKUIShowNotice("Turn DEF copied.");
+    }
+}
+
 void zDKUIDrawAnalysisPanel(ImVec2 zDKUISize)
 {
-    static const char* zDKUIIds[] = {"damage-panel", "tanking-panel", "calcs-panel"};
+    static const char* zDKUIIds[] = {"damage-panel", "tanking-panel", "turn-panel", "calcs-panel"};
     zDKUIBeginPanel(zDKUIIds[zDKUIDisplayedSection], zDKUISize);
     zDKEffectEvaluation zDKUIEvaluation;
     try
@@ -2250,7 +2532,7 @@ void zDKUIDrawAnalysisPanel(ImVec2 zDKUISize)
             static_cast<double>(zDKCalcFloorStatistic(zDKUICurrentBattle.zDKEffectMaxHP));
         zDKUICurrentBattle.zDKEffectCurrentHP =
             static_cast<double>(zDKCalcFloorStatistic(zDKUICurrentBattle.zDKEffectCurrentHP));
-        zDKUIEvaluation = zDKEffectEvaluate(
+        zDKUIEvaluation = zDKTurnEvaluate(
             zDKUICurrentUnit, zDKUICurrentBoss, zDKUICurrentBattle, zDKUISelectedAttackKind == 1
         );
     }
@@ -2371,6 +2653,17 @@ void zDKUIDrawAnalysisPanel(ImVec2 zDKUISize)
             "Uses the max roll and the same DEF, guard and DR on every hit. HP conditions may "
             "change after taking damage."
         );
+    }
+    else if (zDKUIDisplayedSection == 2)
+    {
+        try
+        {
+            zDKUIDrawTurnDefense();
+        }
+        catch (const std::exception& zDKUIError)
+        {
+            zDKUIDrawWrappedText(zDKUIError.what(), zDKUIPink);
+        }
     }
     else
     {
@@ -2699,7 +2992,8 @@ void zDKUIDrawNavigationBar(
     const char* const* zDKUILabels,
     int& zDKUISelected,
     ImVec2 zDKUISize,
-    bool zDKUIPrimary = false
+    bool zDKUIPrimary = false,
+    int zDKUICount = 3
 )
 {
     ImGui::PushID(zDKUIId);
@@ -2707,9 +3001,9 @@ void zDKUIDrawNavigationBar(
            zDKUIBottomRight = {zDKUITopLeft.x + zDKUISize.x, zDKUITopLeft.y + zDKUISize.y};
     auto* zDKUIDrawList = ImGui::GetWindowDrawList();
     zDKUIDrawSkin(zDKUIDrawList, zDKUISkinKind::zDKUISection, zDKUITopLeft, zDKUIBottomRight, 0);
-    float zDKUIInset = zDKUIScalePixels(10), zDKUISegment = (zDKUISize.x - zDKUIInset * 2) / 3;
+    float zDKUIInset = zDKUIScalePixels(10), zDKUISegment = (zDKUISize.x - zDKUIInset * 2) / zDKUICount;
     ImGui::PushFont(zDKUIPrimary ? zDKUIHeadingFont : zDKUIBodyFont);
-    for (int zDKUIIndex = 0; zDKUIIndex < 3; ++zDKUIIndex)
+    for (int zDKUIIndex = 0; zDKUIIndex < zDKUICount; ++zDKUIIndex)
     {
         ImVec2 zDKUIMinimum =
                    {zDKUITopLeft.x + zDKUIInset + zDKUIIndex * zDKUISegment,
@@ -2952,22 +3246,24 @@ void zDKUIRender(HWND zDKUIWindowHandle)
     ImGui::SetCursorScreenPos({zDKUITopLeft.x, zDKUINavY});
     static const char* zDKUIUnitSections[] = {"Stats", "Effects", "Setup"};
     static const char* zDKUIBossSections[] = {"Stats", "Effects", "Skills"};
-    static const char* zDKUIInfoSections[] = {"Damage", "Tanking", "Calcs"};
+    static const char* zDKUIInfoSections[] = {"Damage", "Tanking", "Turn", "Calcs"};
     zDKUIDrawNavigationBar(
         "secondary-nav",
         zDKUIActiveTab == 0       ? zDKUIUnitSections
             : zDKUIActiveTab == 1 ? zDKUIBossSections
                                   : zDKUIInfoSections,
         zDKUISelectedSubviews[zDKUIActiveTab],
-        {zDKUIWidth, zDKUINavHeight}
+        {zDKUIWidth, zDKUINavHeight},
+        false,
+        zDKUIActiveTab == 2 ? 4 : 3
     );
-    int zDKUIDesired = zDKUIActiveTab * 3 + zDKUISelectedSubviews[zDKUIActiveTab];
+    int zDKUIDesired = zDKUIActiveTab * 4 + zDKUISelectedSubviews[zDKUIActiveTab];
     if (zDKUIDisplayedTab < 0)
     {
         zDKUIDisplayedTab = zDKUIActiveTab;
         zDKUIDisplayedSection = zDKUISelectedSubviews[zDKUIActiveTab];
     }
-    int zDKUIDisplayed = zDKUIDisplayedTab * 3 + zDKUIDisplayedSection;
+    int zDKUIDisplayed = zDKUIDisplayedTab * 4 + zDKUIDisplayedSection;
     if (!zDKUIAnimationsEnabled)
     {
         zDKUIDisplayedTab = zDKUIActiveTab;
@@ -2990,7 +3286,7 @@ void zDKUIRender(HWND zDKUIWindowHandle)
             std::min(1.f, zDKUIPageProgress + std::min(ImGui::GetIO().DeltaTime, .05f) / .20f);
     float zDKUIEased = zDKUIPageProgress * zDKUIPageProgress * (3 - 2 * zDKUIPageProgress);
     float zDKUIOffset = zDKUIScalePixels(14) * (1 - zDKUIEased) *
-        (zDKUIDisplayedTab * 3 + zDKUIDisplayedSection == zDKUIDesired ? zDKUIPageDirection
+        (zDKUIDisplayedTab * 4 + zDKUIDisplayedSection == zDKUIDesired ? zDKUIPageDirection
                                                                        : -zDKUIPageDirection);
     ImGui::SetCursorScreenPos({zDKUITopLeft.x + zDKUIOffset, zDKUIContentY});
     ImVec2 zDKUIContentSize = {
@@ -3008,6 +3304,7 @@ void zDKUIRender(HWND zDKUIWindowHandle)
     ImGui::EndDisabled();
     ImGui::PopStyleVar(2);
     zDKUIDrawEffectModal();
+    zDKUIDrawTurnPlanModal();
     ImGui::End();
     ImGui::PopStyleVar();
 }

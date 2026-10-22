@@ -842,7 +842,7 @@ struct zDKTestInteractionChecks
                 if (zDKTestWait(28))
                 {
                     zDKTestExpect(
-                        zDKUIDisplayedTab == 2 && zDKUIDisplayedSection == 2 &&
+                        zDKUIDisplayedTab == 2 && zDKUIDisplayedSection == 3 &&
                             zDKUIControlProbes.count("Copy calc") > 0,
                         "Info Calcs contains the calculation report"
                     );
@@ -870,7 +870,7 @@ struct zDKTestInteractionChecks
                 if (zDKTestWait(30))
                 {
                     zDKTestExpect(
-                        zDKUIActiveTab == 2 && zDKUIDisplayedTab == 2 && zDKUIDisplayedSection == 2,
+                        zDKUIActiveTab == 2 && zDKUIDisplayedTab == 2 && zDKUIDisplayedSection == 3,
                         "Horizontal content drags preserve the current tab and subview"
                     );
                     zDKTestNext();
@@ -887,7 +887,7 @@ struct zDKTestInteractionChecks
                 if (zDKTestWait(30))
                 {
                     zDKTestExpect(
-                        zDKUIActiveTab == 2 && zDKUIDisplayedTab == 2 && zDKUIDisplayedSection == 2,
+                        zDKUIActiveTab == 2 && zDKUIDisplayedTab == 2 && zDKUIDisplayedSection == 3,
                         "Dragging across the top navigation does not select a tab"
                     );
                     zDKTestNext();
@@ -904,7 +904,7 @@ struct zDKTestInteractionChecks
                 if (zDKTestWait(30))
                 {
                     zDKTestExpect(
-                        zDKUIActiveTab == 2 && zDKUIDisplayedSection == 2,
+                        zDKUIActiveTab == 2 && zDKUIDisplayedSection == 3,
                         "Dragging across the lower navigation does not select a subview"
                     );
                     zDKTestExpect(
@@ -951,7 +951,7 @@ struct zDKTestInteractionChecks
                         "Diagonal page drags scroll the content vertically"
                     );
                     zDKTestExpect(
-                        zDKUIActiveTab == 2 && zDKUIDisplayedTab == 2 && zDKUIDisplayedSection == 2,
+                        zDKUIActiveTab == 2 && zDKUIDisplayedTab == 2 && zDKUIDisplayedSection == 3,
                         "Vertical page scrolling preserves the current tab and subview"
                     );
                     zDKTestStep = 406;
@@ -1348,6 +1348,7 @@ struct zDKTestInteractionChecks
                         "Ultra Super Attack has its own editor and raise count"
                     );
                     zDKUIEffectModalState.zDKUIDraft.zDKEffectValue = 50;
+                    zDKUIEffectModalState.zDKUIDraft.zDKEffectCount = 1;
                     zDKTestNext();
                 }
                 break;
@@ -1688,8 +1689,185 @@ struct zDKTestInteractionChecks
                     !ImGui::IsPopupOpen("App updates", ImGuiPopupFlags_AnyPopupId),
                     "The updater returns to the calculator"
                 );
-                zDKTestLog << zDKTestChecks << " UI checks passed.\n";
-                zDKTestDone = true;
+                zDKTestStep = 900;
+                zDKTestTicks = 0;
+                break;
+            case 900:
+            {
+                zDKUICurrentUnit = zDKEffectCreateEmptyUnitProfile();
+                zDKUICurrentUnit.zDKEffectBaseDefense = 1000;
+                auto zDKTestSA = zDKEffectCreate(zDKEffectCategory::zDKEffectSuperAttackStack);
+                zDKTestSA.zDKEffectValue = 30;
+                auto zDKTestUltra = zDKEffectCreate(zDKEffectCategory::zDKEffectUltraSuperAttack);
+                zDKTestUltra.zDKEffectValue = 50;
+                auto zDKTestBuild = zDKEffectCreate(zDKEffectCategory::zDKEffectWhenAttacking);
+                zDKTestBuild.zDKEffectValue = 25;
+                zDKUICurrentUnit.zDKEffectEffects = {zDKTestSA, zDKTestUltra, zDKTestBuild};
+                zDKUIAnimationsEnabled = false;
+                zDKUIActiveTab = 2;
+                zDKUISelectedSubviews[2] = 2;
+                zDKTestNext();
+                break;
+            }
+            case 901:
+                if (zDKTestWait(4))
+                {
+                    zDKTestExpect(
+                        zDKUIControlProbes.count("Turn") && zDKUIControlProbes.count("Edit attack plan"),
+                        "Info exposes a dedicated Turn subview and attack-plan editor"
+                    );
+                    zDKTestNext();
+                }
+                break;
+            case 902:
+                if (zDKTestClick("Edit attack plan"))
+                    zDKTestNext();
+                break;
+            case 903:
+                if (zDKTestWait(4))
+                {
+                    zDKTestExpect(
+                        ImGui::IsPopupOpen("Attack plan", ImGuiPopupFlags_AnyPopupId) &&
+                            zDKUIControlProbes.count("Apply attack plan"),
+                        "Attack plans open in a custom full-screen modal"
+                    );
+                    zDKTestNext();
+                }
+                break;
+            case 904:
+                if (zDKTestClick("+ Add attack"))
+                    zDKTestNext();
+                break;
+            case 905:
+                if (zDKTestClick("Cancel attack plan"))
+                    zDKTestNext();
+                break;
+            case 906:
+                if (zDKTestWait(4))
+                {
+                    zDKTestExpect(
+                        zDKUICurrentUnit.zDKEffectAttackPlan.zDKTurnAttacks.empty(),
+                        "Cancel discards an uncommitted additional attack"
+                    );
+                    zDKTestNext();
+                }
+                break;
+            case 907:
+                if (zDKTestClick("Edit attack plan"))
+                    zDKTestNext();
+                break;
+            case 908:
+            case 909:
+            case 910:
+                if (zDKTestClick("+ Add attack"))
+                    zDKTestNext();
+                break;
+            case 911:
+                if (zDKTestClick("turn-kind-0"))
+                    zDKTestNext();
+                break;
+            case 912:
+                if (zDKTestClick("turn-option-0-2"))
+                    zDKTestNext();
+                break;
+            case 913:
+                if (zDKTestClick("turn-kind-1"))
+                    zDKTestNext();
+                break;
+            case 914:
+                if (zDKTestClick("turn-option-1-0"))
+                    zDKTestNext();
+                break;
+            case 915:
+                if (zDKTestClick("turn-up-2"))
+                    zDKTestNext();
+                break;
+            case 916:
+                if (zDKTestTicks == 0)
+                    zDKTestExpect(
+                        zDKUITurnPlanDraft.zDKTurnAttacks ==
+                            std::vector<zDKTurnAttackKind>{
+                                zDKTurnAttackKind::zDKTurnUltra,
+                                zDKTurnAttackKind::zDKTurnSuper,
+                                zDKTurnAttackKind::zDKTurnNormal
+                            },
+                        "Attack rows can move upward while preserving their configured kinds"
+                    );
+                if (zDKTestClick("turn-down-1"))
+                    zDKTestNext();
+                break;
+            case 917:
+                if (zDKTestClick("Apply attack plan"))
+                    zDKTestNext();
+                break;
+            case 918:
+                if (zDKTestWait(4))
+                {
+                    const auto zDKTestPoints =
+                        zDKTurnCalculateTimeline(zDKUICurrentUnit, zDKUICurrentBoss, zDKUICurrentBattle);
+                    zDKTestExpect(
+                        zDKTestPoints.size() == 4 && zDKTestPoints.back().zDKTurnNormalDefense == 2250 &&
+                            zDKUICurrentUnit.zDKEffectAttackPlan.zDKTurnAttacks[1] ==
+                                zDKTurnAttackKind::zDKTurnNormal,
+                        "The UI saves ordered Ultra SA, normal additional and SA results"
+                    );
+                    zDKTestExpect(
+                        zDKUICurrentUnit.zDKEffectEffects[0].zDKEffectCount == 0 &&
+                            zDKUICurrentUnit.zDKEffectEffects[1].zDKEffectCount == 0,
+                        "Viewing turn progression leaves starting SA raises unchanged"
+                    );
+                    zDKUIActiveTab = 0;
+                    zDKUISelectedSubviews[0] = 1;
+                    zDKTestNext();
+                }
+                break;
+            case 919:
+                if (zDKTestWait(4))
+                    zDKTestNext();
+                break;
+            case 920:
+                if (zDKTestClick("effect-row-2"))
+                    zDKTestNext();
+                break;
+            case 921:
+                if (zDKTestWait(4))
+                    zDKTestNext();
+                break;
+            case 922:
+                if (zDKTestClick("DEF activation"))
+                    zDKTestNext();
+                break;
+            case 923:
+                if (zDKTestClick("option-DEF activation-1"))
+                    zDKTestNext();
+                break;
+            case 924:
+                if (zDKTestEditNumber("build-limit", "2"))
+                    zDKTestNext();
+                break;
+            case 925:
+                if (zDKTestClick("Apply"))
+                    zDKTestNext();
+                break;
+            case 926:
+                if (zDKTestWait(6))
+                {
+                    const auto zDKTestPoints =
+                        zDKTurnCalculateTimeline(zDKUICurrentUnit, zDKUICurrentBoss, zDKUICurrentBattle);
+                    zDKTestExpect(
+                        zDKUICurrentUnit.zDKEffectEffects[2].zDKEffectBuildUpLimit == 2 &&
+                            zDKUICurrentUnit.zDKEffectEffects[2].zDKEffectBuildUpTrigger ==
+                                zDKTurnBuildUpTrigger::zDKTurnAnyAttack,
+                        "The effect editor configures per-attack DEF build-up and its cap"
+                    );
+                    zDKTestExpect(
+                        zDKTestPoints[2].zDKTurnNormalDefense == 2250 &&
+                            zDKTestPoints.back().zDKTurnNormalDefense == 2700,
+                        "A normal additional increases configured passive build-up before the following SA"
+                    );
+                    zDKTestLog << zDKTestChecks << " UI checks passed.\n";
+                    zDKTestDone = true;
+                }
                 break;
         }
     }

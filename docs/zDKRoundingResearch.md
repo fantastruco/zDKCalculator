@@ -35,6 +35,6 @@ HP thresholds retain their ratio so a condition such as 50.5% is not changed. Hi
 
 ## Persistence and verification
 
-Legacy rounding flags remain readable but normalize to enabled. They cannot disable integer steps. Current formats are `DOKKAN_UNIT 4` and `DOKKAN_SESSION 5`.
+Legacy rounding flags remain readable but normalize to enabled. They cannot disable integer steps. Current formats are `DOKKAN_UNIT 5` and `DOKKAN_SESSION 6`.
 
 `tests/zDKRoundingTests.h` covers nonzero remainders, separate factors, direct and derived SA ATK, independent DR, final Domain damage, DEF ignored, large ratios, overflow rejection and legacy presets. Community DEF examples and interface tests remain part of the build.

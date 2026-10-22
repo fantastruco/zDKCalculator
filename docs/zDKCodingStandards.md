@@ -8,6 +8,8 @@ follows the prefix, then a descriptive English name in PascalCase.
 |---|---|---|
 | Defense and damage arithmetic | `zDKCalc` | `zDKCalcCalculateBattle` |
 | Skill effects, activation and profiles | `zDKEffect` | `zDKEffectResolveUnit` |
+| Ordered attacks and DEF progression | `zDKTurn` | `zDKTurnCalculateTimeline` |
+| Version checks and update installation | `zDKUpdate` | `zDKUpdateDownload` |
 | Preset and session serialization | `zDKStore` | `zDKStoreSaveSession` |
 | Interface, animation and skin rendering | `zDKUI` | `zDKUIDrawEffectModal` |
 | Windows, Direct3D and application lifecycle | `zDKWin` | `zDKWinCreateRenderTarget` |

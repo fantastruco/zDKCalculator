@@ -11,6 +11,7 @@ A portable Windows defense calculator for Dragon Ball Z Dokkan Battle, written i
 - Conditional effects for Entrance Animation, Basic Effect, When Attacking, When Receiving Attack, Super Attack, Ultra Super Attack, Ally Support and Active Skill.
 - Independent enemy Normal ATK and Super Attack ATK, or base ATK with an SA multiplier.
 - Damage ranges, remaining HP, hits until K.O. and calculation breakdowns.
+- Ordered normal/SA/Ultra SA additionals with DEF after each attack and configurable passive build-up.
 - Unit presets, import/export and saved sessions.
 - Live thousands separators, smooth vertical scrolling, scalable text and neon controls.
 - Always on Top and verified updates through Settings.
@@ -29,9 +30,9 @@ Run `DokkanDefenseCalculator.exe`. Requires Windows 10 or 11, 64-bit. Artwork an
 
 **Boss → Stats** accepts separate full Normal and SA ATK, or base ATK plus an SA multiplier. **Effects** adds conditional enemy boosts. **Skills** contains enemy DEF, ATK Down sources, DEF ignored and manual critical-hit rules. Enter only effects that apply to the chosen enemy.
 
-**Info → Damage / Tanking / Calcs** shows results for the selected attack, HP and protection details, and the calculation breakdown. **Copy calc** copies the encounter and results as plain text.
+**Info → Damage / Tanking / Turn / Calcs** shows results for the selected attack, HP and protection details, and the calculation breakdown. **Copy calc** copies the encounter and results as plain text.
 
-Turn and **Before attack / After attack** refer to the configured encounter and the unit's attack timing, including normal attacks. The calculator evaluates the supplied scenario; it does not automatically simulate a full attack sequence or track each buff's duration.
+Turn and **Before attack / After attack** refer to the configured encounter and the unit's attack timing, including normal attacks. The calculator evaluates the supplied scenario; [the attack plan](docs/zDKTurnDefense.md) evaluates the selected attack order; buff duration is configured manually.
 
 ## Interface
 
@@ -41,7 +42,15 @@ Use the top buttons to select Unit, Boss or Info and the lower bar to select a s
 
 The Settings gear contains **Always on Top**, **Animations & glow**, **App updates**, calculation reference, **New calculation** and **Resume last session**. The header pin indicates Always on Top. Type selectors use AGL blue, TEQ green, INT purple, STR red and PHY gold.
 
-Startup and New calculation begin with zero stats and no sample effects. Turn and stack counts begin at 1; neutral coefficients retain their mathematical identity.
+Startup and New calculation begin with zero stats and no sample effects. Turn begins at 1. New Super Attack and Ultra Super Attack effects begin with zero active raises; neutral coefficients retain their mathematical identity.
+
+## Attack plans and DEF progression
+
+Open **Info → Turn → Edit attack plan** to add an opening attack and ordered additionals. Each entry can be a Normal Attack, Super Attack or Ultra Super Attack. Reorder or remove entries, then Apply the plan. The full-screen editor keeps Apply and Cancel accessible while scrolling.
+
+Enter the SA/Ultra boost in Unit Effects and set **Raises already active** to the stacks present before attacking. The preview adds each new matching SA raise in order. Normals do not add SA raises. To model a passive that builds DEF with attacks, choose **When Attacking → DEF activation**, then configure its trigger, DEF per activation, previous activations and cap.
+
+Turn shows starting DEF, DEF after each attack, the gain and expandable damage details. **After attack** in Damage and Calcs uses the final planned attack; **Before attack** uses the starting state. Unit presets include the plan and build-up settings. See [the attack-sequence model](docs/zDKTurnDefense.md) for calculation rules and limitations.
 
 ## Presets and sessions
 
@@ -52,11 +61,11 @@ Data is stored under `%LOCALAPPDATA%\DokkanDefenseLab\`:
 | Data | Location |
 |---|---|
 | Unit presets | `presets\` |
-| Last edited session | `session-v5.dokkan` |
+| Last edited session | `session-v6.dokkan` |
 | Window settings | `window-settings.dokkan` |
 | Staged updates | `updates\` |
 
-The data-folder name remains stable for compatibility. Startup opens an empty calculation; Resume last session restores saved work. Closing an untouched empty calculation preserves the previous saved session. Current formats are `DOKKAN_UNIT 4` and `DOKKAN_SESSION 5`; older supported files migrate when loaded, and legacy session files remain available.
+The data-folder name remains stable for compatibility. Startup opens an empty calculation; Resume last session restores saved work. Closing an untouched empty calculation preserves the previous saved session. Current formats are `DOKKAN_UNIT 5` and `DOKKAN_SESSION 6`; older supported files migrate when loaded, and legacy session files remain available.
 
 ## Calculation model
 
@@ -77,7 +86,7 @@ Requires Visual Studio 2022 or Build Tools with **Desktop development with C++**
 .\build.ps1 -Run
 ```
 
-Dependencies are vendored. Normal builds require neither Python nor Node.js. The MSVC runtime is statically linked. The build runs 257 engine, formatting and update-metadata checks, 114 interface checks, and isolated Windows updater tests covering SHA-256, tamper rejection, executable replacement and restart.
+Dependencies are vendored. Normal builds require neither Python nor Node.js. The MSVC runtime is statically linked. The build runs 295 engine, formatting, turn-sequence, persistence and update-metadata checks, 122 interface checks, and isolated Windows updater tests covering SHA-256, tamper rejection, executable replacement and restart.
 
 CMake is also supported:
 

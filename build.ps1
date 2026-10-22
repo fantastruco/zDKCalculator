@@ -32,7 +32,7 @@ try {
     Copy-Item -LiteralPath third_party\json\LICENSE.MIT -Destination dist\nlohmann-json-LICENSE.txt
     Copy-Item -LiteralPath README.md -Destination dist
     New-Item -ItemType Directory -Force -Path dist\docs | Out-Null
-    Copy-Item -LiteralPath docs\zDKCodingStandards.md,docs\zDKDefenseResearch.md,docs\zDKRoundingResearch.md,docs\zDKSupportEffects.md,docs\zDKUpdates.md -Destination dist\docs
+    Copy-Item -LiteralPath docs\zDKCodingStandards.md,docs\zDKDefenseResearch.md,docs\zDKRoundingResearch.md,docs\zDKSupportEffects.md,docs\zDKUpdates.md,docs\zDKTurnDefense.md -Destination dist\docs
     Write-Host "Ready: $zDKProjectRoot\dist\DokkanDefenseCalculator.exe"
     if ($zDKRun) { Start-Process -FilePath "$zDKProjectRoot\dist\DokkanDefenseCalculator.exe" }
 } finally { Pop-Location }

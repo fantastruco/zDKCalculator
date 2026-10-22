@@ -323,7 +323,8 @@ inline void zDKEffectValidateEffect(const zDKEffectDefinition& zDKEffectEffectDa
     zDKCalcValidateRange(zDKEffectEffectData.zDKEffectBuildUpCount, 0, 10000, "Invalid build-up count.");
     zDKCalcValidateRange(zDKEffectEffectData.zDKEffectBuildUpLimit, 0, 10000, "Invalid build-up limit.");
     if (zDKEffectEffectData.zDKEffectBuildUpTrigger != zDKTurnBuildUpTrigger::zDKTurnNone &&
-        (zDKEffectIsBoss || zDKEffectEffectData.zDKEffectStat != zDKEffectStat::zDKEffectDefense ||
+        (zDKEffectIsBoss || zDKEffectEffectData.zDKEffectCategory == zDKEffectCategory::zDKEffectSupport ||
+         zDKEffectEffectData.zDKEffectStat != zDKEffectStat::zDKEffectDefense ||
          (zDKEffectEffectData.zDKEffectGroup != zDKEffectDefensePhase::zDKEffectWhenAttacking &&
           zDKEffectEffectData.zDKEffectGroup != zDKEffectDefensePhase::zDKEffectMidBattle)))
         throw std::invalid_argument("Attack build-up requires a unit DEF effect in Phase 2.");

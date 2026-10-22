@@ -11,6 +11,7 @@ add_executable(DokkanDefenseCalculator WIN32 src/zDKWindows.cpp src/zDKUI.h src/
     ${zDKImGuiDirectory}/imgui.cpp ${zDKImGuiDirectory}/imgui_draw.cpp ${zDKImGuiDirectory}/imgui_tables.cpp ${zDKImGuiDirectory}/imgui_widgets.cpp
     ${zDKImGuiDirectory}/backends/imgui_impl_win32.cpp ${zDKImGuiDirectory}/backends/imgui_impl_dx11.cpp)
 target_include_directories(DokkanDefenseCalculator PRIVATE ${zDKImGuiDirectory} ${zDKImGuiDirectory}/backends ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_sources(DokkanDefenseCalculator PRIVATE src/zDKTurnPlan.h src/zDKTurnTimeline.h)
 target_compile_definitions(DokkanDefenseCalculator PRIVATE UNICODE _UNICODE)
 target_link_libraries(DokkanDefenseCalculator PRIVATE d3d11 dxgi d3dcompiler dwmapi windowscodecs ole32 shell32 comdlg32 user32 gdi32 imm32 winhttp bcrypt)
 if(MSVC)

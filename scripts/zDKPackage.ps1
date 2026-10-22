@@ -14,7 +14,7 @@ Copy-Item -LiteralPath (Join-Path $zDKRoot 'third_party\imgui\LICENSE.txt') -Des
 Copy-Item -LiteralPath (Join-Path $zDKRoot 'third_party\json\LICENSE.MIT') -Destination (Join-Path $zDKStage 'nlohmann-json-LICENSE.txt')
 $zDKDocs = Join-Path $zDKStage 'docs'
 New-Item -ItemType Directory -Path $zDKDocs | Out-Null
-foreach ($zDKDoc in @('zDKDefenseResearch.md','zDKRoundingResearch.md','zDKSupportEffects.md','zDKUpdates.md')) {
+foreach ($zDKDoc in @('zDKDefenseResearch.md','zDKRoundingResearch.md','zDKSupportEffects.md','zDKUpdates.md','zDKTurnDefense.md')) {
     Copy-Item -LiteralPath (Join-Path $zDKRoot ('docs\' + $zDKDoc)) -Destination $zDKDocs
 }
 $zDKZip = Join-Path $zDKRoot 'dist\DokkanDefenseCalculator-Windows-x64.zip'

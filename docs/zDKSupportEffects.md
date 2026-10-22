@@ -33,12 +33,12 @@ The view sorts indices without reordering stored effects. This preserves each ro
 
 ## Guard
 
-Choose **Skill effect → Guards all attacks** inside any Unit effect category. Guard retains its activation conditions when changing categories. It has no percentage or independent multiplier. For SA/Ultra SA guard, configure Attack timing to match the scenario; complete attack sequences are not simulated.
+Choose **Skill effect → Guards all attacks** inside any Unit effect category. Guard retains its activation conditions when changing categories. It has no percentage or independent multiplier. For SA/Ultra SA guard, configure Attack timing to match the scenario; [the attack plan](zDKTurnDefense.md) evaluates the configured sequence.
 
 Legacy Guard-category entries migrate into the same model while preserving their conditions.
 
 ## Persistence and verification
 
-New files use `DOKKAN_UNIT 4` and `DOKKAN_SESSION 5`. Presets v2/v3 and sessions v2/v3/v4 remain readable. Resume checks `session-v5.dokkan` before older session files, which are retained.
+New files use `DOKKAN_UNIT 5` and `DOKKAN_SESSION 6`. Presets v2/v3/v4 and sessions v2/v3/v4/v5 remain readable. Resume checks `session-v6.dokkan` before older session files, which are retained.
 
 `tests/zDKSupportTests.h` covers additive support, phases, conditions, SA/Ultra SA, stable order and migration. Interface checks add and edit support, change its source, combine Ultra SA raises and select guard in effect editors.

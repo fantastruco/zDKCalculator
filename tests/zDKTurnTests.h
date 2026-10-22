@@ -23,6 +23,24 @@ void zDKTestTurnTimeline()
     const auto zDKTestMixed = zDKTurnCalculateTimeline(zDKTestUnit, zDKTestBoss, zDKTestBattle);
     const double zDKTestExpected[] = {1000, 1500, 1500, 1800, 2100};
     zDKTestExpect(zDKTestMixed.size() == 5, "Turn timeline includes the starting point and each attack");
+    zDKTestExpectNear(
+        zDKTurnEvaluate(zDKTestUnit, zDKTestBoss, zDKTestBattle).zDKEffectNormalDefense.zDKCalcSelected,
+        2100,
+        "After-attack damage analysis uses the final planned attack"
+    );
+    auto zDKTestBefore = zDKTestBattle;
+    zDKTestBefore.zDKEffectAfterUnitAttack = false;
+    const auto zDKTestBeforeResult = zDKTurnEvaluate(zDKTestUnit, zDKTestBoss, zDKTestBefore);
+    zDKTestExpectNear(
+        zDKTestBeforeResult.zDKEffectNormalDefense.zDKCalcSelected,
+        1000,
+        "Before-attack analysis excludes raises from future attacks"
+    );
+    zDKTestExpectNear(
+        zDKTestBeforeResult.zDKEffectResult.zDKCalcDefense.zDKCalcAfterAttack,
+        2100,
+        "The DEF breakdown still previews the real end-of-turn result before attacking"
+    );
     for (int zDKTestIndex = 0; zDKTestIndex < 5; ++zDKTestIndex)
         zDKTestExpectNear(
             zDKTestMixed[zDKTestIndex].zDKTurnNormalDefense,

@@ -59,7 +59,7 @@ Configure only effects whose class and activation conditions apply to the unit.
 
 - Guard has a type factor before DEF and a guard factor after DEF. Type DEF Boost requires natural type advantage.
 - General DR sources add by default. Attack-specific DR uses a separate factor. Independent factors require the explicit `Multiplicative` setting.
-- SA stacks and SA support add in the SA bracket.
+- SA stacks and SA support add in the SA bracket. The attack plan applies new raises in attack order.
 - Enemy critical hits are a manual scenario with editable type, guard and DEF-ignore behavior. Available community examples do not resolve every interaction with class, Type DEF Boost, DR and passive guard.
 - DEF Down currently reduces final DEF. Its field does not claim to reproduce every SA debuff, stack interaction or source-specific rule.
 - Conditions use the manually supplied turn and HP. The model does not capture start-of-turn HP, count turns since first appearance or track each stack's duration.
@@ -68,6 +68,6 @@ Configure only effects whose class and activation conditions apply to the unit.
 
 ## Persistence and verification
 
-Current formats are `DOKKAN_UNIT 4` and `DOKKAN_SESSION 5`. Presets v2/v3 and sessions v2/v3/v4 remain readable. Resume searches the current session first and then legacy files. Legacy files are retained, and missing fields use neutral defaults.
+Current formats are `DOKKAN_UNIT 5` and `DOKKAN_SESSION 6`. Presets v2/v3/v4 and sessions v2/v3/v4/v5 remain readable. Resume searches the current session first and then legacy files. Legacy files are retained, and missing fields use neutral defaults.
 
 `tests/zDKResearchTests.h` covers community examples and compatibility. `build.ps1` runs engine and interface checks.

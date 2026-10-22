@@ -2,6 +2,10 @@
 
 The attack plan is an ordered, deterministic scenario containing Normal Attack, Super Attack and Ultra Super Attack entries. It records the unit's attacks within one turn, rather than rolling additional-attack probabilities. There can be up to 16 entries; this is an editor limit, not a claimed game maximum.
 
+Open **Info → Turn → Edit attack plan**. Add the opening attack and each additional, choose their types, and use Up/Dn to reorder or × to remove them. Apply saves the draft; Cancel or Escape discards it. The editor fills the portrait window and keeps its action buttons accessible while scrolling. The Turn page shows the starting DEF, DEF after each attack, DEF change and expandable incoming-damage details. **Copy turn DEF** exports the sequence and its results.
+
+When a plan is configured, **Before attack** in Damage and Calcs evaluates the starting state; **After attack** evaluates the final planned attack. The Turn page always shows the complete sequence. Clearing the plan restores direct calculation from the entered active effect counts.
+
 ## Starting point and raises
 
 SA and Ultra SA effect counts describe raises already active before the first planned attack. New SA/Ultra entries start at zero raises. Keep only previous raises that remain active this turn; durations and expiration are configured manually.
@@ -13,6 +17,8 @@ Choose the actual attack type for each additional. Selecting an Ultra SA explici
 ## Passive build-up
 
 A Phase 2 DEF effect can grow with each attack, each Super Attack (including Ultra SA), or each Ultra SA. Enter DEF per activation, activations already accumulated, and a maximum activation count; zero maximum means uncapped. Ordinary amounts add within Phase 2 before that phase is applied. `Multiplicative` retains its explicit independent-factor behavior.
+
+Configure this under **Unit → Effects → When Attacking → DEF activation**. A Basic Effect explicitly assigned to Mid-battle passive (Phase 2) also exposes these controls. Ally Support is excluded because this sequence belongs to the unit rather than its allies.
 
 Previously accumulated build-up contributes before the first attack. A normal can add passive build-up without adding an SA raise. Enabled state, turn, HP and attack-timing conditions still apply.
 
