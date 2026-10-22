@@ -179,7 +179,7 @@ void zDKTestSupportAndSections()
     std::istringstream zDKTestInput(zDKTestSaved);
     zDKTestExpect(
         zDKStoreLoadUnit(zDKTestInput, zDKTestLoaded) && zDKStoreSaveUnit(zDKTestLoaded) == zDKTestSaved,
-        "Preset v4 preserves categories, SA/Ultra counts, support source and guard"
+        "Current presets preserve categories, SA/Ultra counts, support source and guard"
     );
     std::istringstream zDKTestOldGuard(
         "DOKKAN_UNIT 3\n\"Old guard\"\n1000 0 0 0 0 1 0 0\n1\n"

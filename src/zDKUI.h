@@ -968,7 +968,7 @@ std::filesystem::path zDKUIDataDirectory()
 
 std::filesystem::path zDKUISessionPath()
 {
-    return zDKUIDataDirectory() / L"session-v5.dokkan";
+    return zDKUIDataDirectory() / L"session-v6.dokkan";
 }
 
 bool zDKUIRestoreSavedSession();

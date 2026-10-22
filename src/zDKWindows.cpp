@@ -726,6 +726,7 @@ bool zDKUIRestoreSavedSession()
 {
     for (const auto& zDKWinPath :
          {zDKUISessionPath(),
+          zDKUIDataDirectory() / L"session-v5.dokkan",
           zDKUIDataDirectory() / L"session-v4.dokkan",
           zDKUIDataDirectory() / L"session-v3.dokkan",
           zDKUIDataDirectory() / L"session-v2.dokkan"})

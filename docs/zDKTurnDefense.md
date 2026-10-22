@@ -23,3 +23,7 @@ Each point is rebuilt from base stats through the existing integer stages. It ne
 Manual DEF remains fixed; base DEF is needed to project DEF-building effects. Boss stats and HP remain fixed throughout the preview. The plan does not simulate enemy attacks between the unit's attacks, change HP or expire earlier stacks automatically.
 
 [Razzer's guide](https://kandymanis.github.io/dokkanalytics/razzers-guide) gives the regression example: Wrathful Broly reaches 431,791 DEF before attacking; three attacks with two SA give a Phase 2 multiplier of 2.5 and an SA-effect multiplier of 1.4, producing 1,511,267 DEF after phase truncation. The engine tests reproduce this example and check mixed SA/Ultra/normal order, retained raises, support, build-up caps, conditional effects and manual DEF.
+
+## Presets and sessions
+
+The attack plan and passive build-up settings belong to the unit preset. New files use `DOKKAN_UNIT 5` and `DOKKAN_SESSION 6`. Presets v2–v4 and sessions v2–v5 remain readable. Old profiles retain their saved active raises and start with an empty attack plan. New sessions use `session-v6.dokkan`; Resume also searches previous session files without deleting them. Invalid or truncated plans fail to load without replacing the current data.

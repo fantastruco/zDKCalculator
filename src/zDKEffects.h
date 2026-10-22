@@ -804,11 +804,17 @@ inline void zDKStoreWriteEffect(
                           << zDKEffectEffectData.zDKEffectLastTurn << ' '
                           << int(zDKEffectEffectData.zDKEffectHealthRule) << ' '
                           << zDKEffectEffectData.zDKEffectHealthThresholdPercent << ' '
-                          << int(zDKEffectEffectData.zDKEffectTiming) << '\n';
+                          << int(zDKEffectEffectData.zDKEffectTiming) << ' '
+                          << int(zDKEffectEffectData.zDKEffectBuildUpTrigger) << ' '
+                          << zDKEffectEffectData.zDKEffectBuildUpCount << ' '
+                          << zDKEffectEffectData.zDKEffectBuildUpLimit << '\n';
 }
 
 inline bool zDKStoreReadEffect(
-    std::istream& zDKEffectInputStream, zDKEffectDefinition& zDKEffectEffectData, bool zDKEffectIsBoss
+    std::istream& zDKEffectInputStream,
+    zDKEffectDefinition& zDKEffectEffectData,
+    bool zDKEffectIsBoss,
+    bool zDKStoreHasBuildUp = false
 )
 {
     int zDKEffectCategoryIndex, zDKEffectStatisticIndex, zDKEffectDefensePhaseIndex, zDKEffectHealthPercent,
@@ -825,6 +831,16 @@ inline bool zDKStoreReadEffect(
     zDKEffectEffectData.zDKEffectGroup = zDKEffectDefensePhase(zDKEffectDefensePhaseIndex);
     zDKEffectEffectData.zDKEffectHealthRule = zDKEffectHealthRule(zDKEffectHealthPercent);
     zDKEffectEffectData.zDKEffectTiming = zDKEffectAttackTiming(zDKEffectTiming);
+    zDKEffectEffectData.zDKEffectBuildUpTrigger = zDKTurnBuildUpTrigger::zDKTurnNone;
+    zDKEffectEffectData.zDKEffectBuildUpCount = zDKEffectEffectData.zDKEffectBuildUpLimit = 0;
+    if (zDKStoreHasBuildUp)
+    {
+        int zDKStoreTrigger;
+        if (!(zDKEffectInputStream >> zDKStoreTrigger >> zDKEffectEffectData.zDKEffectBuildUpCount >>
+              zDKEffectEffectData.zDKEffectBuildUpLimit))
+            return false;
+        zDKEffectEffectData.zDKEffectBuildUpTrigger = zDKTurnBuildUpTrigger(zDKStoreTrigger);
+    }
     if (zDKEffectEffectData.zDKEffectCategory == zDKEffectCategory::zDKEffectGuard)
     {
         zDKEffectEffectData.zDKEffectCategory = zDKEffectCategory::zDKEffectBasic;
@@ -846,7 +862,7 @@ inline std::string zDKStoreSaveUnit(const zDKEffectUnitProfile& zDKEffectUnitPro
 {
     zDKEffectValidate(zDKEffectUnitProfileData);
     std::ostringstream zDKEffectOutputStream;
-    zDKEffectOutputStream << std::setprecision(17) << "DOKKAN_UNIT 4\n"
+    zDKEffectOutputStream << std::setprecision(17) << "DOKKAN_UNIT 5\n"
                           << std::quoted(zDKEffectUnitProfileData.zDKEffectName) << '\n';
     zDKEffectOutputStream << zDKEffectUnitProfileData.zDKEffectBaseDefense << ' '
                           << zDKEffectUnitProfileData.zDKEffectLeaderSkillPercent << ' '
@@ -858,6 +874,10 @@ inline std::string zDKStoreSaveUnit(const zDKEffectUnitProfile& zDKEffectUnitPro
                           << zDKEffectUnitProfileData.zDKEffectEffects.size() << '\n';
     for (const auto& zDKEffectEntry : zDKEffectUnitProfileData.zDKEffectEffects)
         zDKStoreWriteEffect(zDKEffectOutputStream, zDKEffectEntry);
+    zDKEffectOutputStream << zDKEffectUnitProfileData.zDKEffectAttackPlan.zDKTurnAttacks.size();
+    for (auto zDKStoreAttack : zDKEffectUnitProfileData.zDKEffectAttackPlan.zDKTurnAttacks)
+        zDKEffectOutputStream << ' ' << int(zDKStoreAttack);
+    zDKEffectOutputStream << '\n';
     return zDKEffectOutputStream.str();
 }
 
@@ -868,7 +888,7 @@ inline bool zDKStoreLoadUnit(std::istream& zDKEffectInputStream, zDKEffectUnitPr
     size_t zDKEffectCount;
     zDKEffectUnitProfile zDKEffectUnitProfileData;
     if (!(zDKEffectInputStream >> zDKEffectMagic >> zDKEffectVersion) || zDKEffectMagic != "DOKKAN_UNIT" ||
-        (zDKEffectVersion < 2 || zDKEffectVersion > 4))
+        (zDKEffectVersion < 2 || zDKEffectVersion > 5))
         return false;
     if (!(zDKEffectInputStream >> std::quoted(zDKEffectUnitProfileData.zDKEffectName) >>
           zDKEffectUnitProfileData.zDKEffectBaseDefense >>
@@ -885,8 +905,23 @@ inline bool zDKStoreLoadUnit(std::istream& zDKEffectInputStream, zDKEffectUnitPr
     zDKEffectUnitProfileData.zDKEffectCombatClass = zDKCalcUnitClass(zDKEffectClassIndex);
     zDKEffectUnitProfileData.zDKEffectEffects.resize(zDKEffectCount);
     for (auto& zDKEffectEntry : zDKEffectUnitProfileData.zDKEffectEffects)
-        if (!zDKStoreReadEffect(zDKEffectInputStream, zDKEffectEntry, false))
+        if (!zDKStoreReadEffect(zDKEffectInputStream, zDKEffectEntry, false, zDKEffectVersion >= 5))
             return false;
+    if (zDKEffectVersion >= 5)
+    {
+        size_t zDKStoreAttackCount;
+        if (!(zDKEffectInputStream >> zDKStoreAttackCount) || zDKStoreAttackCount > zDKTurnMaximumAttacks)
+            return false;
+        for (size_t zDKStoreIndex = 0; zDKStoreIndex < zDKStoreAttackCount; ++zDKStoreIndex)
+        {
+            int zDKStoreAttack;
+            if (!(zDKEffectInputStream >> zDKStoreAttack))
+                return false;
+            zDKEffectUnitProfileData.zDKEffectAttackPlan.zDKTurnAttacks.push_back(
+                zDKTurnAttackKind(zDKStoreAttack)
+            );
+        }
+    }
     try
     {
         zDKEffectValidate(zDKEffectUnitProfileData);
@@ -909,7 +944,7 @@ inline std::string zDKStoreSaveSession(
 {
     zDKEffectEvaluate(zDKEffectUnitProfileData, zDKEffectBossProfileData, zDKEffectBattleStateData);
     std::ostringstream zDKEffectOutputStream;
-    zDKEffectOutputStream << std::setprecision(17) << "DOKKAN_SESSION 5\n"
+    zDKEffectOutputStream << std::setprecision(17) << "DOKKAN_SESSION 6\n"
                           << zDKStoreSaveUnit(zDKEffectUnitProfileData)
                           << std::quoted(zDKEffectBossProfileData.zDKEffectName) << '\n';
     const zDKCalcEnemyStats& zDKEffectEnemyStatsData = zDKEffectBossProfileData.zDKEffectStats;
@@ -962,7 +997,7 @@ inline bool zDKStoreLoadSession(
     size_t zDKEffectCount;
     std::string zDKEffectMagic;
     if (!(zDKEffectInputStream >> zDKEffectMagic >> zDKEffectVersion) || zDKEffectMagic != "DOKKAN_SESSION" ||
-        (zDKEffectVersion < 2 || zDKEffectVersion > 5) ||
+        (zDKEffectVersion < 2 || zDKEffectVersion > 6) ||
         !zDKStoreLoadUnit(zDKEffectInputStream, zDKEffectLoadedUnitProfile))
         return false;
     auto& zDKEffectEnemyStatsData = zDKEffectLoadedBossProfile.zDKEffectStats;
@@ -1004,7 +1039,7 @@ inline bool zDKStoreLoadSession(
     zDKEffectEnemyStatsData.zDKCalcCombatClass = zDKCalcUnitClass(zDKEffectClassIndex);
     zDKEffectLoadedBossProfile.zDKEffectEffects.resize(zDKEffectCount);
     for (auto& zDKEffectEntry : zDKEffectLoadedBossProfile.zDKEffectEffects)
-        if (!zDKStoreReadEffect(zDKEffectInputStream, zDKEffectEntry, true))
+        if (!zDKStoreReadEffect(zDKEffectInputStream, zDKEffectEntry, true, zDKEffectVersion >= 6))
             return false;
     if (!(zDKEffectInputStream >> zDKEffectLoadedBattleState.zDKEffectTurn >>
           zDKEffectLoadedBattleState.zDKEffectMaxHP >> zDKEffectLoadedBattleState.zDKEffectCurrentHP >>
