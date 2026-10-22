@@ -32,7 +32,7 @@ Run `DokkanDefenseCalculator.exe`. Requires Windows 10 or 11, 64-bit. Artwork an
 
 **Info → Damage / Tanking / Turn / Calcs** shows results for the selected attack, HP and protection details, and the calculation breakdown. **Copy calc** copies the encounter and results as plain text.
 
-Turn and **Before attack / After attack** refer to the configured encounter and the unit's attack timing, including normal attacks. The calculator evaluates the supplied scenario; [the attack plan](docs/zDKTurnDefense.md) evaluates the selected attack order; buff duration is configured manually.
+Turn and **Before attack / After attack** refer to the configured encounter and the unit's attack timing, including normal attacks. The [attack plan](docs/zDKTurnDefense.md) follows the configured order. Buff duration and enemy actions remain manually configured.
 
 ## Interface
 
@@ -100,12 +100,13 @@ GitHub Actions verifies public-source pushes and pull requests. See [release pub
 
 ## Source and assets
 
-Project-owned C++ declarations use the `zDK` prefix, followed by their responsibility: `Calc`, `Effect`, `Store`, `UI`, `Win`, `Update` or `Test`. See [coding standards](docs/zDKCodingStandards.md). Shared formatting and naming checks are configured in `.clang-format` and `.clang-tidy`.
+Project-owned C++ declarations use the `zDK` prefix, followed by their responsibility: `Calc`, `Effect`, `Turn`, `Store`, `UI`, `Win`, `Update` or `Test`. See [coding standards](docs/zDKCodingStandards.md). Shared formatting and naming checks are configured in `.clang-format` and `.clang-tidy`.
 
 | Location | Purpose |
 |---|---|
 | `src/zDKCalculator.h`, `src/zDKIntegerMath.h` | Defense, damage and integer arithmetic |
 | `src/zDKEffects.h` | Effect resolution, conditions and persistence |
+| `src/zDKTurnPlan.h`, `src/zDKTurnTimeline.h` | Ordered attacks and per-attack DEF progression |
 | `src/zDKUI.h`, `src/zDKUISkin.h` | Editors, results, controls and animations |
 | `src/zDKUINumberFormat.h` | Grouped numeric editing |
 | `src/zDKWindows.cpp` | Win32, DPI, Direct3D and diagnostics |

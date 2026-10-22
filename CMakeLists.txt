@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(DokkanDefenseCalculator VERSION 3.11.0 LANGUAGES CXX RC)
+project(DokkanDefenseCalculator VERSION 3.12.0 LANGUAGES CXX RC)
 if(NOT WIN32)
     message(FATAL_ERROR "The interface requires Windows and Direct3D 11.")
 endif()
